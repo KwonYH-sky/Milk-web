@@ -1,6 +1,7 @@
 package com.milk.milkweb.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "board")
 @Getter @Builder
+@AllArgsConstructor
 public class Board {
 
 	@Id
@@ -28,4 +30,11 @@ public class Board {
 
 	private LocalDateTime updatedTime;
 
+	private int views;
+
+	private int likes;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
 }
