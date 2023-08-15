@@ -1,7 +1,7 @@
 package com.milk.milkweb.entity;
 
 import com.milk.milkweb.constant.Role;
-import com.milk.milkweb.dto.MemberFromDto;
+import com.milk.milkweb.dto.MemberFormDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,11 +30,11 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	public static Member createMember(MemberFromDto memberFromDto, PasswordEncoder passwordEncoder) {
-		String password = passwordEncoder.encode(memberFromDto.getPassword());
+	public static Member createMember(MemberFormDto memberFormDto, PasswordEncoder passwordEncoder) {
+		String password = passwordEncoder.encode(memberFormDto.getPassword());
 		return Member.builder()
-				.email(memberFromDto.getEmail())
-				.name(memberFromDto.getName())
+				.email(memberFormDto.getEmail())
+				.name(memberFormDto.getName())
 				.password(password)
 				.role(Role.USER)
 				.build();

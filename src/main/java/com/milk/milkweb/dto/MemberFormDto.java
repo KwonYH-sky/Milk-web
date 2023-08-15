@@ -3,12 +3,12 @@ package com.milk.milkweb.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
-@Getter @Builder
-public class MemberFromDto {
+@Getter @Setter
+public class MemberFormDto {
 
 	@NotBlank (message = "이름은 필수 입력 값입니다.")
 	private String name;

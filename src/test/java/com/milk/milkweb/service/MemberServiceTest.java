@@ -1,6 +1,6 @@
 package com.milk.milkweb.service;
 
-import com.milk.milkweb.dto.MemberFromDto;
+import com.milk.milkweb.dto.MemberFormDto;
 import com.milk.milkweb.entity.Member;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,11 +25,10 @@ public class MemberServiceTest {
 	PasswordEncoder passwordEncoder;
 
 	public Member createMember() {
-		MemberFromDto member = MemberFromDto.builder()
-				.name("김우유")
-				.email("test@test.com")
-				.password("1234")
-				.build();
+		MemberFormDto member = new MemberFormDto();
+		member.setName("김우유");
+		member.setEmail("test@test.com");
+		member.setPassword("1234");
 		return Member.createMember(member, passwordEncoder);
 	}
 
