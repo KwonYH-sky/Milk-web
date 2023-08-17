@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+
+    <th:block layout:fragment="script"></th:block>
+
+    <th:block layout:fragment="css"></th:block>
+
+  </head>
+  <body>
+    <header></header>
+    <div layout:fragment="content">
+
+    </div>
+    <footer></footer>
+  </body>
+</html>

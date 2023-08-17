@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" 
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="css">
+
+  <style>
+    .fieldError {
+      color: red;
+    }
+    #wrong_pwd {
+      color: red;
+      display: none;
+    }
+  </style>
+
+</th:block>
+
+<th:block layout:fragment="script">
+
+  <script th:inline="javascript">
+
+    $(document).ready(() => {
+      const errorMessage = [[${errorMessage}]];
+      if (errorMessage != null) {
+        alert(errorMessage);
+      }
+      
+    });
+
+    function register() {
+      const password = $("#password").val();
+      const confirmPassword = $("#password_confirm").val();
+
+      if (password != confirmPassword) {
+        $("#wrong_pwd").show();
+        $("$password_confirm").focus();
+      } else {
+        $("#registerForm").submit();
+      }
+    }
+
+  </script>
+
+</th:block>
+
+
+<head>
+  <meta charset="UTF-8" />
+  <title>회원가입</title>
+</head>
+
+<body>
+
+  <div layout:fragment="content">
+    <form action="/member/register" role="form" method="post" th:object="${memberFormDto}" id="registerForm">
+
+      <div>
+        <label th:for="name">이름</label>
+        <input type="text" th:field="*{name}" placeholder="이름을 입력해주세요.">
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p>
+      </div>
+
+      <div>
+        <label th:for="email">이메일</label>
+        <input type="email" th:field="*{email}" placeholder="이메일을 입력해주세요.">
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p>
+      </div>
+
+      <div>
+        <label th:for="password">비밀번호</label>
+        <input type="password" th:field="*{password}" id="password" placeholder="비밀번호를 입력해주세오.">
+        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p>
+      </div>
+
+      <div>
+        <label th:for="password_confirm">비밀번호 확인</label>
+        <input type="password" id="password_confirm" placeholder="비밀번호를 다시 입력해주세오.">
+        <p id="wrong_pwd">비밀번호가 일치하지 않습니다.</p>
+      </div>
+
+      <button type="button" onclick="register()">가입하기</button>
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    </form>
+  </div>
+
+</body>
+
+</html>
