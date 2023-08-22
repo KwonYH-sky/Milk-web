@@ -8,9 +8,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -20,22 +22,28 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-		http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
+		http.formLogin(login -> login
 				.loginPage("/member/login")
 				.defaultSuccessUrl("/")
 				.usernameParameter("email")
-				.failureForwardUrl("/member/login/error")
+				.passwordParameter("password")
+				.failureHandler((request, response, exception) ->
+						response.sendRedirect("/member/login/error"))
 		);
 
-		http.logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
-				.logoutUrl("/member/logout")
-				.logoutSuccessUrl("/"));
+		http.logout(logout -> logout
+				.logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
+				.logoutSuccessHandler((request, response, authentication) ->
+						response.sendRedirect("/")));
 
-		http.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(
-						new AntPathRequestMatcher("/"),
-						new AntPathRequestMatcher("/member/**")).permitAll()
-				.anyRequest().authenticated()
+		http
+				.sessionManagement((sessionManagement)->
+						sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(
+							new AntPathRequestMatcher("/"),
+							new AntPathRequestMatcher("/member/**")).permitAll()
+						.anyRequest().authenticated()
 		);
 
 		http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
@@ -57,7 +65,11 @@ public class SecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring().requestMatchers("/css/**", "/js/**");
+		return web -> web.ignoring().requestMatchers(
+				new AntPathRequestMatcher("/css/**"),
+				new AntPathRequestMatcher("/js/**"),
+				new AntPathRequestMatcher("/error")
+		);
 	}
 }
 
