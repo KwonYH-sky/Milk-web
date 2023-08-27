@@ -2,6 +2,7 @@ package com.milk.milkweb.service;
 
 
 import com.milk.milkweb.dto.BoardFormDto;
+import com.milk.milkweb.dto.BoardListDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.repository.BoardRepository;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
@@ -36,5 +39,23 @@ public class BoardService {
 		return boardRepository.save(board);
 	}
 
+	@Transactional(readOnly = true)
+	public List<BoardListDto> getBoardList() {
+		List<Board> boards = boardRepository.findAll();
+		List<BoardListDto> boardListDtos = new ArrayList<>();
 
+		for (Board board : boards) {
+			BoardListDto boardListDto = BoardListDto.builder()
+					.id(board.getId())
+					.title(board.getTitle())
+					.memberName(board.getMember().getName())
+					.views(board.getViews())
+					.likes(board.getLikes())
+					.createdTime(board.getCreatedTime())
+					.build();
+			boardListDtos.add(boardListDto);
+		}
+
+		return boardListDtos;
+	}
 }

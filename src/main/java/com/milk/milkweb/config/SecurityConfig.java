@@ -42,7 +42,8 @@ public class SecurityConfig {
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(
 							new AntPathRequestMatcher("/"),
-							new AntPathRequestMatcher("/member/**")).permitAll()
+							new AntPathRequestMatcher("/member/**"),
+							new AntPathRequestMatcher("/board/**")).permitAll()
 						.anyRequest().authenticated()
 		);
 

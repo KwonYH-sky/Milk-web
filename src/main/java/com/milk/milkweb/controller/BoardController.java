@@ -1,6 +1,7 @@
 package com.milk.milkweb.controller;
 
 import com.milk.milkweb.dto.BoardFormDto;
+import com.milk.milkweb.dto.BoardListDto;
 import com.milk.milkweb.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
+import java.util.List;
 
 @RequestMapping(value = "/board")
 @Controller
@@ -42,4 +44,10 @@ public class BoardController {
 		return "redirect:/";
 	}
 
+	@GetMapping(value = "/list")
+	public String getBoardList (Model model) {
+		List<BoardListDto> boardListDtos = boardService.getBoardList();
+		model.addAttribute("boardListDtos", boardListDtos);
+		return "/board/boardList";
+	}
 }
