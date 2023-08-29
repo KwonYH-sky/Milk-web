@@ -1,12 +1,14 @@
 package com.milk.milkweb.service;
 
 
+import com.milk.milkweb.dto.BoardDetailDto;
 import com.milk.milkweb.dto.BoardFormDto;
 import com.milk.milkweb.dto.BoardListDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.repository.BoardRepository;
 import com.milk.milkweb.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,5 +59,22 @@ public class BoardService {
 		}
 
 		return boardListDtos;
+	}
+
+	public BoardDetailDto getDetil(Long id) {
+		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		BoardDetailDto boardDetailDto = BoardDetailDto.builder()
+				.id(board.getId())
+				.title(board.getTitle())
+				.content(board.getContent())
+				.memberName(board.getMember().getName())
+				.createdTime(board.getCreatedTime())
+				.updatedTime(board.getUpdatedTime())
+				.view(board.getViews())
+				.likes(board.getLikes())
+				.build();
+
+		return boardDetailDto;
 	}
 }

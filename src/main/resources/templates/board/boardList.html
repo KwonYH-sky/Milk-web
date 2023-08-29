@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제목</th>
+                    <th>글쓴이</th>
+                    <th>추천</th>
+                    <th>조회</th>
+                    <th>날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="board : ${boardListDtos}">
+                    <td>
+                        <div th:text="${board.id}"></div>
+                    </td>
+                    <td>
+                        <a th:href="#" th:text="${board.title}"></a>
+                    </td>
+                    <td>
+                        <div th:text="${board.memberName}"></div>
+                    </td>
+                    <td>
+                        <div th:text="${board.likes}"></div>
+                    </td>
+                    <td>
+                        <div th:text="${board.views}"></div>
+                    </td>
+                    <td>
+                        <div th:text="${board.createdTime}"></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+
+    </th:block>
+</body>
+</html>
