@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" 
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${boardDetail.title}"></title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+        <h1 th:text="${boardDetail.title}"></h1>
+        <div>
+            <div> 글번호: 
+                <span th:text="${boardDetail.id}"></span>
+            </div>
+            <div> 등록 시간: 
+                <span th:text="${boardDetail.createdTime}"></span>
+            </div>
+            <div> 수정 시간: 
+                <span th:text="${boardDetail.updatedTime}"></span>
+            </div>
+            <div> 작성자: 
+                <span th:text="${boardDetail.memberName}"></span>
+            </div>
+            <div> 조회수: 
+                <span th:text="${boardDetail.view}"></span>
+            </div>
+            <div> 추천: 
+                <span th:text="${boardDetail.likes}"></span>
+            </div>
+            <div>내용</div>
+            <div th:text="${boardDetail.content}"></div>
+        </div>
+        <div>
+            <button type="button">수정</button>
+            <button type="button">삭제</button>
+        </div>
+        
+
+    </th:block>
+</body>
+</html>

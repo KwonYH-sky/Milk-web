@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" 
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>자유 게시판</title>
 </head>
 <body>
     <th:block layout:fragment="content">
@@ -24,7 +27,7 @@
                         <div th:text="${board.id}"></div>
                     </td>
                     <td>
-                        <a th:href="#" th:text="${board.title}"></a>
+                        <a th:href="/board/list/ + ${board.id}" th:text="${board.title}"></a>
                     </td>
                     <td>
                         <div th:text="${board.memberName}"></div>

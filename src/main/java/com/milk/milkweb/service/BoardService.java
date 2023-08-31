@@ -4,6 +4,7 @@ package com.milk.milkweb.service;
 import com.milk.milkweb.dto.BoardDetailDto;
 import com.milk.milkweb.dto.BoardFormDto;
 import com.milk.milkweb.dto.BoardListDto;
+import com.milk.milkweb.dto.BoardUpdateDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.repository.BoardRepository;
@@ -61,8 +62,11 @@ public class BoardService {
 		return boardListDtos;
 	}
 
-	public BoardDetailDto getDetil(Long id) {
+	@Transactional(readOnly = true)
+	public BoardDetailDto getDetail(Long id) {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+		board.increaseView();
 
 		BoardDetailDto boardDetailDto = BoardDetailDto.builder()
 				.id(board.getId())
@@ -76,5 +80,27 @@ public class BoardService {
 				.build();
 
 		return boardDetailDto;
+	}
+
+	@Transactional(readOnly = true)
+	public BoardUpdateDto getUpdateForm(Long id, String email) throws Exception {
+		Member member = memberRepository.findByEmail(email);
+		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		if (member != board.getMember()) {
+			throw new Exception("수정 권한이 없습니다.");
+		}
+
+		BoardUpdateDto boardUpdateDto = BoardUpdateDto.builder()
+				.id(board.getId())
+				.title(board.getTitle())
+				.content(board.getContent())
+				.build();
+		return boardUpdateDto;
+	}
+
+	public Board updateBoard(BoardUpdateDto boardUpdateDto) {
+		Board board = boardRepository.findById(boardUpdateDto.getId()).orElseThrow(EntityNotFoundException::new);
+		board.update(boardUpdateDto);
+		return board;
 	}
 }

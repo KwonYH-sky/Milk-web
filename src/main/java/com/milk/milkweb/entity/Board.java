@@ -1,5 +1,6 @@
 package com.milk.milkweb.entity;
 
+import com.milk.milkweb.dto.BoardUpdateDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,4 +40,14 @@ public class Board {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	public void increaseView() {
+		this.views++;
+	}
+
+	public void update(BoardUpdateDto boardUpdateDto) {
+		this.title = boardUpdateDto.getTitle();
+		this.content = boardUpdateDto.getContent();
+		this.updatedTime = LocalDateTime.now();
+	}
 }
