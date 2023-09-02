@@ -3,6 +3,20 @@
   xmlns:th="http://www.thymeleaf.org" 
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="script">
+
+  <script th:inline="javascript">
+      $(document).ready(() => {
+          const errorMessage = [[${ errorMessage }]];
+          if (errorMessage != null) {
+              alert(errorMessage);
+          }
+      });
+  </script>
+
+</th:block>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,8 +48,8 @@
             <div th:text="${boardDetail.content}"></div>
         </div>
         <div>
-            <button type="button">수정</button>
-            <button type="button">삭제</button>
+            <button type="button" th:onclick="|location.href='@{/board/update/{id}(id=${boardDetail.id})}'|">수정</button>
+            <button type="button" th:onclick="|location.href='@{/board/delete/{id}(id=${boardDetail.id})}'|" formmethod="post">삭제</button>
         </div>
         
 

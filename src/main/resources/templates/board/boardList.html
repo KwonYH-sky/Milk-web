@@ -3,6 +3,20 @@
   xmlns:th="http://www.thymeleaf.org" 
   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="script">
+
+  <script th:inline="javascript">
+      $(document).ready(() => {
+          const errorMessage = [[${ errorMessage }]];
+          if (errorMessage != null) {
+              alert(errorMessage);
+          }
+      });
+  </script>
+
+</th:block>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +41,7 @@
                         <div th:text="${board.id}"></div>
                     </td>
                     <td>
-                        <a th:href="/board/list/ + ${board.id}" th:text="${board.title}"></a>
+                        <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a>
                     </td>
                     <td>
                         <div th:text="${board.memberName}"></div>
