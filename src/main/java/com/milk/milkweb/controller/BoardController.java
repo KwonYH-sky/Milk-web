@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -44,7 +41,7 @@ public class BoardController {
 			return "board/boardForm";
 		}
 
-		return "redirect:/";
+		return "redirect:/board/list";
 	}
 
 	@GetMapping(value = "/list")
@@ -62,15 +59,29 @@ public class BoardController {
 	}
 
 	@GetMapping(value = "/update/{id}")
-	public String getboardUpdateForm(@PathVariable Long id, Principal principal,Model model) {
+	public String getBoardUpdateForm(@PathVariable Long id, Principal principal, Model model) {
 		try {
 			BoardUpdateDto boardUpdateDto = boardService.getUpdateForm(id, principal.getName());
 			model.addAttribute("boardUpdateDto", boardUpdateDto);
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:/";
+			return "redirect:/board/list";
 		}
 		return "/board/boardUpdateForm";
 	}
 
+	@PostMapping(value = "/update/{id}")
+	public String updateBoard(@Valid BoardUpdateDto boardUpdateDto, @PathVariable Long id, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "/board/boardUpdateForm";
+		}
+		boardService.updateBoard(boardUpdateDto, id);
+		return "redirect:/board/list";
+	}
+
+	@DeleteMapping(value = "/delete/{id}")
+	public String deleteBoard(@PathVariable Long id){
+		boardService.deleteBoard(id);
+		return "redirect:/board/list";
+	}
 }

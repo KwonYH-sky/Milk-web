@@ -98,9 +98,13 @@ public class BoardService {
 		return boardUpdateDto;
 	}
 
-	public Board updateBoard(BoardUpdateDto boardUpdateDto) {
-		Board board = boardRepository.findById(boardUpdateDto.getId()).orElseThrow(EntityNotFoundException::new);
+	public Board updateBoard(BoardUpdateDto boardUpdateDto, Long id) {
+		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		board.update(boardUpdateDto);
 		return board;
+	}
+
+	public void deleteBoard(Long id) {
+		boardRepository.deleteById(id);
 	}
 }
