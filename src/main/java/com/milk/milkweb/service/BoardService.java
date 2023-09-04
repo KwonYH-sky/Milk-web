@@ -62,7 +62,8 @@ public class BoardService {
 		return boardListDtos;
 	}
 
-	@Transactional(readOnly = true)
+
+	@Transactional
 	public BoardDetailDto getDetail(Long id) {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 

@@ -53,8 +53,14 @@ public class BoardController {
 
 	@GetMapping(value = "/{id}")
 	public String boardDetail(@PathVariable Long id, Model model) {
-		BoardDetailDto detail = boardService.getDetail(id);
-		model.addAttribute("boardDetail", detail);
+		try {
+			BoardDetailDto detail = boardService.getDetail(id);
+			model.addAttribute("boardDetail", detail);
+		} catch (Exception e) {
+			model.addAttribute("errorMessage", "게시물이 존재하지 않습니다.");
+			return "redirect:/";
+		}
+
 		return "/board/boardDetail";
 	}
 
@@ -65,7 +71,7 @@ public class BoardController {
 			model.addAttribute("boardUpdateDto", boardUpdateDto);
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:/board/list";
+			return "redirect:/board/{id}";
 		}
 		return "/board/boardUpdateForm";
 	}
