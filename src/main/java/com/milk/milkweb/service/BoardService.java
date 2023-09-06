@@ -11,6 +11,7 @@ import com.milk.milkweb.repository.BoardRepository;
 import com.milk.milkweb.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,21 +44,20 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardListDto> getBoardList() {
-		List<Board> boards = boardRepository.findAll();
-		List<BoardListDto> boardListDtos = new ArrayList<>();
+	public Page<BoardListDto> getBoardList(int page) {
+		List<Sort.Order> sorts = new ArrayList<>();
+		sorts.add(Sort.Order.desc("createdTime"));
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+		Page<Board> boards = boardRepository.findAll(pageable);
 
-		for (Board board : boards) {
-			BoardListDto boardListDto = BoardListDto.builder()
-					.id(board.getId())
-					.title(board.getTitle())
-					.memberName(board.getMember().getName())
-					.views(board.getViews())
-					.likes(board.getLikes())
-					.createdTime(board.getCreatedTime())
-					.build();
-			boardListDtos.add(boardListDto);
-		}
+		Page<BoardListDto> boardListDtos = boards.map(board -> BoardListDto.builder()
+				.id(board.getId())
+				.title(board.getTitle())
+				.memberName(board.getMember().getName())
+				.views(board.getViews())
+				.likes(board.getLikes())
+				.createdTime(board.getCreatedTime())
+				.build());
 
 		return boardListDtos;
 	}

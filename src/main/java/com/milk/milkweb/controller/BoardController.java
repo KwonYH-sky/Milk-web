@@ -7,6 +7,7 @@ import com.milk.milkweb.dto.BoardUpdateDto;
 import com.milk.milkweb.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,9 +46,9 @@ public class BoardController {
 	}
 
 	@GetMapping(value = "/list")
-	public String getBoardList (Model model) {
-		List<BoardListDto> boardListDtos = boardService.getBoardList();
-		model.addAttribute("boardListDtos", boardListDtos);
+	public String getBoardList (Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+		Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
+		model.addAttribute("paging", boardListDtos);
 		return "/board/boardList";
 	}
 

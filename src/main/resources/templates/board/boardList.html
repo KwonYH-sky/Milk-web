@@ -8,7 +8,7 @@
 
   <script th:inline="javascript">
       $(document).ready(() => {
-          const errorMessage = [[${ errorMessage }]];
+          const errorMessage = [[${errorMessage}]];
           if (errorMessage != null) {
               alert(errorMessage);
           }
@@ -36,7 +36,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="board : ${boardListDtos}">
+                <tr th:each="board : ${paging}">
                     <td>
                         <div th:text="${board.id}"></div>
                     </td>
@@ -59,7 +59,26 @@
             </tbody>
         </table>
         
-
+        <!-- 페이징 -->
+        <div th:if="${!paging.isEmpty()}">
+            <ul>
+                <li>
+                    <a th:href="@{|?page=${paging.number-1}|}">
+                        <span>이전</span>
+                    </a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}" 
+                    th:if="${page >= paging.number-5 and page <= paging.number+5}">
+                    <a th:href="@{|?page=${page}}" th:text="${page}"></a>
+                </li>
+                <li>
+                    <a th:href="@{|?page=${paging.number+1}}">
+                        <span>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--페이징 end-->
     </th:block>
 </body>
 </html>
