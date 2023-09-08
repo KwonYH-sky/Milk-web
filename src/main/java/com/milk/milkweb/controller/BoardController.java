@@ -47,8 +47,13 @@ public class BoardController {
 
 	@GetMapping(value = "/list")
 	public String getBoardList (Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
-		Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
-		model.addAttribute("paging", boardListDtos);
+		try {
+			Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
+			model.addAttribute("paging", boardListDtos);
+		} catch (Exception e) {
+			model.addAttribute("paging", boardService.getBoardList(0));
+		}
+
 		return "/board/boardList";
 	}
 
@@ -87,8 +92,12 @@ public class BoardController {
 	}
 
 	@DeleteMapping(value = "/delete/{id}")
-	public String deleteBoard(@PathVariable Long id){
-		boardService.deleteBoard(id);
+	public String deleteBoard(@PathVariable Long id, Principal principal, Model model) throws Exception {
+		try {
+			boardService.deleteBoard(id, principal.getName());
+		} catch (Exception e) {
+			model.addAttribute("errorMessage", e.getMessage());
+		}
 		return "redirect:/board/list";
 	}
 }

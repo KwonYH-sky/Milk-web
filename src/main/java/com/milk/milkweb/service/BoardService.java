@@ -85,11 +85,7 @@ public class BoardService {
 
 	@Transactional(readOnly = true)
 	public BoardUpdateDto getUpdateForm(Long id, String email) throws Exception {
-		Member member = memberRepository.findByEmail(email);
-		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		if (member != board.getMember()) {
-			throw new Exception("수정 권한이 없습니다.");
-		}
+		Board board = validateMemberBoard(id, email);
 
 		BoardUpdateDto boardUpdateDto = BoardUpdateDto.builder()
 				.id(board.getId())
@@ -105,7 +101,18 @@ public class BoardService {
 		return board;
 	}
 
-	public void deleteBoard(Long id) {
-		boardRepository.deleteById(id);
+	public void deleteBoard(Long id, String email) throws IllegalAccessException {
+		Board board = validateMemberBoard(id, email);
+		boardRepository.delete(board);
+	}
+
+	public Board validateMemberBoard(Long id, String email) throws IllegalAccessException {
+		Member member = memberRepository.findByEmail(email);
+		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		if (member != board.getMember()) {
+			throw new IllegalAccessException("권한이 없습니다.");
+		}
+
+		return board;
 	}
 }
