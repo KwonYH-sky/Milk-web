@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <header th:fragment="header" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <div class="col-md-3 mb-2 mb-md-0">
           <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-            <img src="" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+            <img src="/" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
             Milk Web
           </a>
         </div>
   
         <div class="col-md-3 text-end">
-          <button type="button" class="btn btn-outline-primary me-2">Login</button>
-          <button type="button" class="btn btn-outline-primary me-2">Logout</button>
-          <button type="button" class="btn btn-primary me-2">Sign-up</button>
+          <button type="button" class="btn btn-outline-primary me-2" sec:authorize="isAnonymous()" th:onclick="|location.href='@{/member/login}'|">Login</button>
+          <button type="button" class="btn btn-outline-danger me-2" sec:authorize="isAuthenticated()" th:onclick="|location.href='@{/member/logout}'|">Logout</button>
+          <button type="button" class="btn btn-primary me-2" sec:authorize="isAnonymous()" th:onclick="|location.href='@{/member/register}'|">Sign-up</button>
         </div>
       </header>
 </body>
