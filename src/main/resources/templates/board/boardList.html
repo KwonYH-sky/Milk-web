@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko" 
-  xmlns:th="http://www.thymeleaf.org" 
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layout/layout}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="script">
 
-  <script th:inline="javascript">
-      $(document).ready(() => {
-          const errorMessage = [[${errorMessage}]];
-          if (errorMessage != null) {
-              alert(errorMessage);
-          }
-      });
-  </script>
+    <script th:inline="javascript">
+        $(document).ready(() => {
+            const errorMessage = [[${ errorMessage }]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+        });
+    </script>
 
 </th:block>
 
@@ -22,22 +20,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>자유 게시판</title>
 </head>
+
 <body>
     <th:block layout:fragment="content">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>제목</th>
-                    <th>글쓴이</th>
-                    <th>추천</th>
-                    <th>조회</th>
-                    <th>날짜</th>
+                    <th scope="col">#</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">글쓴이</th>
+                    <th scope="col">추천</th>
+                    <th scope="col">조회</th>
+                    <th scope="col">날짜</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="board : ${paging}">
-                    <td>
+                    <td scope="row">
                         <div th:text="${board.id}"></div>
                     </td>
                     <td>
@@ -58,22 +57,23 @@
                 </tr>
             </tbody>
         </table>
-        
+
         <!-- 페이징 -->
         <div th:if="${!paging.isEmpty()}">
-            <ul>
-                <li>
-                    <a th:href="@{|?page=${paging.number-1}|}">
-                        <span>이전</span>
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                    <a th:href="@{|?page=${paging.number-1}|}" class="page-link">
+                        <span class="page-link">이전</span>
                     </a>
                 </li>
-                <li th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}" 
-                    th:if="${page >= paging.number-5 and page <= paging.number+5}">
-                    <a th:href="@{|?page=${page}}" th:text="${page}"></a>
+                <li th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}"
+                    th:if="${page >= paging.number-5 and page <= paging.number+5}"
+                    th:classappend="${page == paging.number} ? 'active'" class="page-item">
+                    <a th:href="@{|?page=${page}}" th:text="${page+1}" class="page-link"></a>
                 </li>
-                <li>
-                    <a th:href="@{|?page=${paging.number+1}}">
-                        <span>다음</span>
+                <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                    <a th:href="@{|?page=${paging.number+1}}" class="page-link">
+                        <span class="page-link">다음</span>
                     </a>
                 </li>
             </ul>
@@ -81,4 +81,5 @@
         <!--페이징 end-->
     </th:block>
 </body>
+
 </html>
