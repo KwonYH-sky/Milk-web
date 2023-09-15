@@ -63,7 +63,7 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
                     <a th:href="@{|?page=${paging.number-1}|}" class="page-link">
-                        <span class="page-link">이전</span>
+                        <span>이전</span>
                     </a>
                 </li>
                 <li th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}"
@@ -73,7 +73,7 @@
                 </li>
                 <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
                     <a th:href="@{|?page=${paging.number+1}}" class="page-link">
-                        <span class="page-link">다음</span>
+                        <span>다음</span>
                     </a>
                 </li>
             </ul>
