@@ -6,7 +6,7 @@
 
     <script th:inline="javascript">
         $(document).ready(() => {
-            const errorMessage = [[${ errorMessage }]];
+            const errorMessage = [[${errorMessage}]];
             if (errorMessage != null) {
                 alert(errorMessage);
             }
@@ -27,7 +27,7 @@
         <div class="m-5 pb-3">
             <form id="boardForm" th:action="@{/board/update/{id}(id=${boardUpdateDto.id})}" role="form" method="post"
                 th:object="${boardUpdateDto}">
-                <input type="hidden" th:text="${boardUpdateDto.id}">
+                <input type="hidden" class="d-block" th:text="${boardUpdateDto.id}">
                 <div class="mx-5 mb-4">
                     <label th:for="title" class="form-label fs-2">제목</label>
                     <input title="글제목" type="text" th:field="*{title}" name="title" id="title" class="form-control ">
@@ -35,8 +35,7 @@
 
                 <div class="mx-5 mb-3">
                     <label th:for="content" class="form-label fs-2">내용</label>
-                    <textarea class="content form-control" th:field="*{content}"
-                        th:text="${boardUpdateDto.content} name=" content" rows="30" cols="50"></textarea>
+                    <textarea class="content form-control" th:field="*{content}" th:text="${boardUpdateDto.content}" name="content" rows="30" cols="50"></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-success mx-5">수정</button>

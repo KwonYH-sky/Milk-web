@@ -58,6 +58,10 @@
             </tbody>
         </table>
 
+        <div class="text-end">
+            <button type="button" class="btn btn-primary m-3" onclick="location.href='/board/write'">글쓰기</button>
+        </div>
+
         <!-- 페이징 -->
         <div th:if="${!paging.isEmpty()}">
             <ul class="pagination justify-content-center">
