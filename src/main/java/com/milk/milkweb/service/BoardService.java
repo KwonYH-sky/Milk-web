@@ -1,10 +1,7 @@
 package com.milk.milkweb.service;
 
 
-import com.milk.milkweb.dto.BoardDetailDto;
-import com.milk.milkweb.dto.BoardFormDto;
-import com.milk.milkweb.dto.BoardListDto;
-import com.milk.milkweb.dto.BoardUpdateDto;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.repository.BoardRepository;
@@ -115,4 +112,17 @@ public class BoardService {
 
 		return board;
 	}
+
+	@Transactional(readOnly = true)
+	public List<MainBoardDto> getMainBoard() {
+		List<Board> boards = boardRepository.findMainBoards();
+
+		List<MainBoardDto> mainBoardList = boards.stream().map(board -> MainBoardDto.builder()
+				.id(board.getId())
+				.title(board.getTitle())
+				.build()).toList();
+
+		return mainBoardList;
+	}
+
 }
