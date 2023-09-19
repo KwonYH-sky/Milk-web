@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "board")
-@Getter @Builder
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Board {
@@ -43,6 +44,10 @@ public class Board {
 
 	public void increaseView() {
 		this.views++;
+	}
+
+	public void increaseLike() {
+		this.likes++;
 	}
 
 	public void update(BoardUpdateDto boardUpdateDto) {

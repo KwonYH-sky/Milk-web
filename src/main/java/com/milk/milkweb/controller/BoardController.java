@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RequestMapping(value = "/board")
 @Controller
@@ -45,7 +44,7 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
-	@GetMapping(value = "/list")
+	@GetMapping(value = {"", "/list"})
 	public String getBoardList (Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
 		try {
 			Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
