@@ -4,10 +4,13 @@ import com.milk.milkweb.dto.BoardDetailDto;
 import com.milk.milkweb.dto.BoardFormDto;
 import com.milk.milkweb.dto.BoardListDto;
 import com.milk.milkweb.dto.BoardUpdateDto;
+import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +24,7 @@ import java.security.Principal;
 public class BoardController {
 
 	private final BoardService boardService;
+	private final BoardLikeService boardLikeService;
 
 	@GetMapping(value = "/write")
 	public String entryWriteBoardForm (Model model) {
@@ -98,5 +102,16 @@ public class BoardController {
 			model.addAttribute("errorMessage", e.getMessage());
 		}
 		return "redirect:/board/list";
+	}
+
+	@PostMapping(value = "/like")
+	public @ResponseBody ResponseEntity likeBoard(Long boardId, Principal principal) throws IllegalAccessException {
+		try {
+			boardLikeService.addBoardLike(boardId, principal.getName());
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+		}
+
+		return new ResponseEntity<>(boardId, HttpStatus.OK);
 	}
 }

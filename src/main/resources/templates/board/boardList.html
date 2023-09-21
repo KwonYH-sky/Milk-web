@@ -40,7 +40,7 @@
                         <div th:text="${board.id}"></div>
                     </td>
                     <td>
-                        <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a>
+                        <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}" class="text-decoration-none"></a>
                     </td>
                     <td>
                         <div th:text="${board.memberName}"></div>
