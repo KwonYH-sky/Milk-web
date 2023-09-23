@@ -20,8 +20,7 @@
 
     const likeBoard = () => {
 
-      const boardId = $('#boardId').val();
-      const loginEmail = $('#loginEmail').val();
+      const boardId = parseInt($('#boardId').val(), 10);
       const token = $("meta[name='_csrf']").attr("content");
       const header = $("meta[name='_csrf_header']").attr("content");
 
@@ -37,6 +36,7 @@
         .then(res => {
           console.log(res)
           alert("추천 완료");
+          location.reload();
         })
         .catch(err => {
           alert("잘못된 접근입니다.")
@@ -58,7 +58,6 @@
 <body>
   <th:block layout:fragment="content">
     <input type="hidden" id="boardId" th:value="${boardDetail.id}">
-    <input type="hidden" id="loginEmail" th:value="${loginEmail}">
 
     <div class="m-5">
       <div class="fs-2 border-bottom border-dark-subtle" th:text="${boardDetail.title}">test</div>

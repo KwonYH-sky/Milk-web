@@ -1,5 +1,6 @@
 package com.milk.milkweb.service;
 
+import com.milk.milkweb.dto.BoardLikeDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.BoardLike;
 import com.milk.milkweb.entity.Member;
@@ -22,8 +23,8 @@ public class BoardLikeService {
 	private final MemberRepository memberRepository;
 	private final BoardLikeRepository boardLikeRepository;
 
-	public BoardLike addBoardLike(Long boardId, String email) throws IllegalAccessException {
-		Board board = boardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
+	public BoardLike addBoardLike(BoardLikeDto boardLikeDto, String email) throws IllegalAccessException {
+		Board board = boardRepository.findById(boardLikeDto.getBoardId()).orElseThrow(EntityNotFoundException::new);
 		Optional<Member> memberOp = Optional.ofNullable(memberRepository.findByEmail(email));
 		Member member = memberOp.orElseThrow(EntityNotFoundException::new);
 

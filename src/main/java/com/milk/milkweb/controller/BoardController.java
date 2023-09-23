@@ -1,9 +1,6 @@
 package com.milk.milkweb.controller;
 
-import com.milk.milkweb.dto.BoardDetailDto;
-import com.milk.milkweb.dto.BoardFormDto;
-import com.milk.milkweb.dto.BoardListDto;
-import com.milk.milkweb.dto.BoardUpdateDto;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
 import jakarta.validation.Valid;
@@ -105,13 +102,13 @@ public class BoardController {
 	}
 
 	@PostMapping(value = "/like")
-	public @ResponseBody ResponseEntity likeBoard(Long boardId, Principal principal) throws IllegalAccessException {
+	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, Principal principal) throws IllegalAccessException {
 		try {
-			boardLikeService.addBoardLike(boardId, principal.getName());
+			boardLikeService.addBoardLike(boardLikeDto, principal.getName());
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
 		}
 
-		return new ResponseEntity<>(boardId, HttpStatus.OK);
+		return new ResponseEntity<>(boardLikeDto, HttpStatus.OK);
 	}
 }
