@@ -36,4 +36,8 @@ public class BoardLikeService {
 		return boardLikeRepository.save(BoardLike.createBoardLikeEntity(board, member));
 	}
 
+	public int getBoardLike(Long id) {
+		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+		return board.getLikes();
+	}
 }

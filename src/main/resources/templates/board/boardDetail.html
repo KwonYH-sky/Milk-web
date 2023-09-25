@@ -18,13 +18,13 @@
       }
     });
 
-    const likeBoard = () => {
-
+    const likeBoard = async () => {
+      const url = '/board/like';
       const boardId = parseInt($('#boardId').val(), 10);
       const token = $("meta[name='_csrf']").attr("content");
       const header = $("meta[name='_csrf_header']").attr("content");
 
-      axios.post('/board/like', {
+      await axios.post(url, {
         'boardId': boardId
       },
         {
@@ -36,10 +36,18 @@
         .then(res => {
           console.log(res)
           alert("추천 완료");
-          location.reload();
         })
         .catch(err => {
-          alert("잘못된 접근입니다.")
+          alert(err.response.data);
+          console.error(err);
+        })
+
+      await axios.get(url + '/' + boardId)
+        .then(res => {
+          console.log(res)
+          $('#boardLikes').text(res.data);
+        })
+        .catch(err => {
           console.error(err);
         })
     };
@@ -73,13 +81,10 @@
           <div class="mb-2"> 조회수:
             <span th:text="${boardDetail.view}"></span>
           </div>
-          <div class="mb-2"> 추천:
-            <span th:text="${boardDetail.likes}"></span>
-          </div>
           <div class="mb-2"> 등록 시간:
             <span th:text="${boardDetail.createdTime}"></span>
           </div>
-          <div class="mb-2"> 수정 시간:
+          <div class="mb-2" if="${not #strings.isEmpty(boardDetail.updatedTime)}"> 수정 시간:
             <span th:text="${boardDetail.updatedTime}"></span>
           </div>
         </div>
@@ -88,7 +93,7 @@
       <div class="border border-start-0 border-success p-2 mb-2 border-opacity-50">
         <div class="my-2" th:text="${boardDetail.content}"></div>
         <div class="d-flex align-items-center justify-content-center">
-          <button type="button" class="btn btn-success mt-3 mb-1" onclick="likeBoard()">좋아요</button>
+          <button type="button" class="btn btn-success mt-3 mb-1" onclick="likeBoard()">좋아요 <span id="boardLikes" th:text="${boardDetail.likes}"></span></button>
         </div>
       </div>
 

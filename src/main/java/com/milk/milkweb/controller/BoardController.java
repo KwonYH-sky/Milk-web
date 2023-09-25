@@ -3,6 +3,7 @@ package com.milk.milkweb.controller;
 import com.milk.milkweb.dto.*;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -110,5 +111,16 @@ public class BoardController {
 		}
 
 		return new ResponseEntity<>(boardLikeDto, HttpStatus.OK);
+	}
+
+	@GetMapping(value = "/like/{id}")
+	public @ResponseBody ResponseEntity getLike(@PathVariable Long id) {
+		int like = 0;
+		try {
+			like = boardLikeService.getBoardLike(id);
+		} catch (EntityNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(like, HttpStatus.OK);
 	}
 }
