@@ -51,6 +51,33 @@
           console.error(err);
         })
     };
+
+    const writeComment = () => {
+      const header = $("meta[name='_csrf_header']").attr("content");
+      const token = $("meta[name='_csrf']").attr("content");
+
+      const url = '/comment/write';
+      const comment = $('#comment_input').val();
+      const boardId = parseInt($('#boardId').val(), 10);
+
+      axios.post(url,{
+        'comment': comment,
+        'boardId': boardId
+      },
+        {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            [header]: token
+          }
+        })
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.error(err); 
+        alert("댓글 등록 중 오류가 발생했습니다.");
+      })
+    };
   </script>
 
 </th:block>
@@ -93,7 +120,8 @@
       <div class="border border-start-0 border-success p-2 mb-2 border-opacity-50">
         <div class="my-2" th:text="${boardDetail.content}"></div>
         <div class="d-flex align-items-center justify-content-center">
-          <button type="button" class="btn btn-success mt-3 mb-1" onclick="likeBoard()">좋아요 <span id="boardLikes" th:text="${boardDetail.likes}"></span></button>
+          <button type="button" class="btn btn-success mt-3 mb-1" onclick="likeBoard()">좋아요 <span id="boardLikes"
+              th:text="${boardDetail.likes}"></span></button>
         </div>
       </div>
 
@@ -109,6 +137,10 @@
 
     </div>
 
+    <div>
+      <textarea name="" id="comment_input" cols="60" rows="3" placeholder="댓글을 남겨 주세요."></textarea>
+      <button type="button" id="comment_btn" class="btn btn-primary">댓글 쓰기</button>
+    </div>
 
   </th:block>
 </body>
