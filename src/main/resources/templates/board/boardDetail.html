@@ -16,6 +16,9 @@
       if (errorMessage != null) {
         alert(errorMessage);
       }
+
+      const commentBth = document.getElementById("comment_btn");
+      commentBth.addEventListener('click', writeComment);
     });
 
     const likeBoard = async () => {
@@ -60,7 +63,7 @@
       const comment = $('#comment_input').val();
       const boardId = parseInt($('#boardId').val(), 10);
 
-      axios.post(url,{
+      axios.post(url, {
         'comment': comment,
         'boardId': boardId
       },
@@ -70,13 +73,14 @@
             [header]: token
           }
         })
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.error(err); 
-        alert("댓글 등록 중 오류가 발생했습니다.");
-      })
+        .then(res => {
+          document.getElementById("comment_input").value = '';
+          console.log(res)
+        })
+        .catch(err => {
+          console.error(err);
+          alert("댓글 등록 중 오류가 발생했습니다.");
+        })
     };
   </script>
 
@@ -111,7 +115,7 @@
           <div class="mb-2"> 등록 시간:
             <span th:text="${boardDetail.createdTime}"></span>
           </div>
-          <div class="mb-2" if="${not #strings.isEmpty(boardDetail.updatedTime)}"> 수정 시간:
+          <div class="mb-2" th:if="${not #strings.isEmpty(boardDetail.updatedTime)}"> 수정 시간:
             <span th:text="${boardDetail.updatedTime}"></span>
           </div>
         </div>
@@ -137,7 +141,7 @@
 
     </div>
 
-    <div>
+    <div class="m-5">
       <textarea name="" id="comment_input" cols="60" rows="3" placeholder="댓글을 남겨 주세요."></textarea>
       <button type="button" id="comment_btn" class="btn btn-primary">댓글 쓰기</button>
     </div>
