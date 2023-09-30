@@ -1,6 +1,7 @@
 package com.milk.milkweb.service;
 
 import com.milk.milkweb.dto.CommentFormDto;
+import com.milk.milkweb.dto.CommentListDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Comment;
 import com.milk.milkweb.entity.Member;
@@ -9,6 +10,9 @@ import com.milk.milkweb.repository.CommentRepository;
 import com.milk.milkweb.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +41,18 @@ public class CommentService {
 				.build();
 
 		return commentRepository.save(comment);
+	}
+
+	public Page<CommentListDto> getCommentList(int page, Long boardId) {
+		Pageable pageable = PageRequest.of(page, 10);
+		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
+
+		 Page<CommentListDto> commentListDtos = comments.map(comment -> CommentListDto.builder()
+				.memberName(comment.getMember().getName())
+				.comment(comment.getComment())
+				.build());
+
+		 return commentListDtos;
 	}
 
 }
