@@ -43,6 +43,7 @@ public class CommentService {
 		return commentRepository.save(comment);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<CommentListDto> getCommentList(int page, Long boardId) {
 		Pageable pageable = PageRequest.of(page, 10);
 		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);

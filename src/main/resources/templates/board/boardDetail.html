@@ -16,7 +16,10 @@
       if (errorMessage != null) {
         alert(errorMessage);
       }
+      // 댓글 불러오기
+      getComments(0);
 
+      // 댓글 등록 이벤트 추가
       const commentBth = document.getElementById("comment_btn");
       commentBth.addEventListener('click', writeComment);
     });
@@ -55,7 +58,7 @@
         })
     };
 
-    const writeComment = () => {
+    const writeComment = async () => {
       const header = $("meta[name='_csrf_header']").attr("content");
       const token = $("meta[name='_csrf']").attr("content");
 
@@ -63,7 +66,7 @@
       const comment = $('#comment_input').val();
       const boardId = parseInt($('#boardId').val(), 10);
 
-      axios.post(url, {
+      await axios.post(url, {
         'comment': comment,
         'boardId': boardId
       },
@@ -80,7 +83,28 @@
         .catch(err => {
           console.error(err);
           alert("댓글 등록 중 오류가 발생했습니다.");
-        })
+        });
+
+      await getComments(0);
+    };
+
+    const getComments = async (page) => {
+      
+      const url = '/comment/board/';
+      const boardId = $('#boardId').val();
+      const params = {
+        'page' : page
+      };
+
+      axios.get(url + boardId, {
+        'params' : params
+      })
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.error(err); 
+      });
     };
   </script>
 
