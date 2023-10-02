@@ -3,7 +3,6 @@ package com.milk.milkweb.controller;
 import com.milk.milkweb.dto.CommentFormDto;
 import com.milk.milkweb.dto.CommentListDto;
 import com.milk.milkweb.service.CommentService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class CommentController {
 	public @ResponseBody ResponseEntity saveComment(@RequestBody CommentFormDto commentFormDto, Principal principal) {
 		try {
 			commentService.saveComment(commentFormDto, principal.getName());
-		} catch (EntityNotFoundException e) {
+		} catch (Exception e) {
 			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);

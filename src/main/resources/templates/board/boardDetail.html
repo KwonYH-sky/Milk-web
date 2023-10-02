@@ -89,22 +89,48 @@
     };
 
     const getComments = async (page) => {
-      
+
       const url = '/comment/board/';
       const boardId = $('#boardId').val();
       const params = {
-        'page' : page
+        'page': page
       };
 
       axios.get(url + boardId, {
-        'params' : params
+        'params': params
       })
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.error(err); 
-      });
+        .then(res => {
+          console.log(res)
+          const data = res.data;
+          let comments = '';
+
+          for (const c of data.content) {
+            comments += `
+            <li class="border-bottom border-dark-subtle">
+              <div class="row my-3">
+                <div class="fw-bold col-2">${c.memberName}</div>
+                <div class="col-10">
+                  ${c.comment}</div>
+              </div>
+            </li>
+          `;
+          }
+          $('#comments').html(comments);
+
+          let commentPage = '';
+          for (let i = 0; i < data.totalPages; i++) {
+            commentPage += `
+            <li class="page-item"><a id="page${i}" class="page-link" href="javascript;">${i + 1}</a></li>
+            `;
+          }
+          $('#comment_paging').html(commentPage);
+
+          // ToDO 페이지 이벤트 추가해야됨
+
+        })
+        .catch(err => {
+          console.error(err);
+        });
     };
   </script>
 
@@ -123,7 +149,7 @@
     <input type="hidden" id="boardId" th:value="${boardDetail.id}">
 
     <div class="m-5">
-      <div class="fs-2 border-bottom border-dark-subtle" th:text="${boardDetail.title}">test</div>
+      <div class="display-6 border-bottom border-dark-subtle" th:text="${boardDetail.title}">test</div>
 
       <div class="my-3">
         <div class="border border-2 border-start-0 rounded p-2">
@@ -166,10 +192,24 @@
     </div>
 
     <div class="m-5">
-      <textarea name="" id="comment_input" cols="60" rows="3" placeholder="댓글을 남겨 주세요."></textarea>
-      <button type="button" id="comment_btn" class="btn btn-primary">댓글 쓰기</button>
-    </div>
+      <div class="form-floating">
+        <textarea class="form-control" id="comment_input" placeholder="댓글을 남겨 주세요." style="height: 100px"></textarea>
+        <label for="floatingTextarea">댓글을 남겨 주세요.</label>
+        <button type="button" id="comment_btn" class="btn btn-primary my-3">댓글 쓰기</button>
+      </div>
 
+      <div id="comment_list">
+        <ul id="comments" class="card-body">
+
+        </ul>
+
+        <nav>
+          <ul id="comment_paging" class="pagination justify-content-center">
+
+          </ul>
+        </nav>
+      </div>
+    </div>
   </th:block>
 </body>
 
