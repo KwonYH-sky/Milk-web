@@ -120,12 +120,14 @@
           let commentPage = '';
           for (let i = 0; i < data.totalPages; i++) {
             commentPage += `
-            <li class="page-item"><a id="page${i}" class="page-link" href="javascript;">${i + 1}</a></li>
+            <li class="page-item"><a id="page${i}" class="page-link">${i + 1}</a></li>
             `;
           }
           $('#comment_paging').html(commentPage);
 
-          // ToDO 페이지 이벤트 추가해야됨
+          for (let i = 0; i < data.totalPages; i++) {
+            $('#page' + i).click(() => getComments(i));
+          }
 
         })
         .catch(err => {
