@@ -98,6 +98,7 @@ public class BoardController {
 			boardService.deleteBoard(id, principal.getName());
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", e.getMessage());
+			return "redirect:/";
 		}
 		return "redirect:/board/list";
 	}
@@ -115,12 +116,11 @@ public class BoardController {
 
 	@GetMapping(value = "/like/{id}")
 	public @ResponseBody ResponseEntity getLike(@PathVariable Long id) {
-		int like = 0;
 		try {
-			like = boardLikeService.getBoardLike(id);
+			int like = boardLikeService.getBoardLike(id);
+			return new ResponseEntity<>(like, HttpStatus.OK);
 		} catch (EntityNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(like, HttpStatus.OK);
 	}
 }

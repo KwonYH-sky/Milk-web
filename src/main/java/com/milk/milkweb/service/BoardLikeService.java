@@ -31,13 +31,12 @@ public class BoardLikeService {
 		if(boardLikeRepository.findByBoardAndMember(board, member).isPresent()){
 			throw new IllegalAccessException("이미 좋아요를 했습니다.");
 		}
-		board.increaseLike();
 
 		return boardLikeRepository.save(BoardLike.createBoardLikeEntity(board, member));
 	}
 
 	public int getBoardLike(Long id) {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		return board.getLikes();
+		return board.getLikes().size();
 	}
 }

@@ -12,6 +12,4 @@ public class BoardLikeDto {
 
 	private Long boardId;
 
-
-
 }

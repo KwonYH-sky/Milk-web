@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -36,7 +38,11 @@ public class Board {
 
 	private int views;
 
-	private int likes;
+	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<BoardLike> likes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<Comment> comments = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
@@ -46,9 +52,6 @@ public class Board {
 		this.views++;
 	}
 
-	public void increaseLike() {
-		this.likes++;
-	}
 
 	public void update(BoardUpdateDto boardUpdateDto) {
 		this.title = boardUpdateDto.getTitle();

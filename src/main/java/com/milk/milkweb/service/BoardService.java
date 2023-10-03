@@ -31,9 +31,7 @@ public class BoardService {
 					.title(boardFormDto.getTitle())
 					.content(boardFormDto.getContent())
 					.createdTime(LocalDateTime.now())
-					.updatedTime(LocalDateTime.now())
 					.views(0)
-					.likes(0)
 					.member(member)
 					.build();
 
@@ -52,7 +50,7 @@ public class BoardService {
 				.title(board.getTitle())
 				.memberName(board.getMember().getName())
 				.views(board.getViews())
-				.likes(board.getLikes())
+				.likes(board.getLikes().size())
 				.createdTime(board.getCreatedTime())
 				.build());
 
@@ -74,7 +72,7 @@ public class BoardService {
 				.createdTime(board.getCreatedTime())
 				.updatedTime(board.getUpdatedTime())
 				.view(board.getViews())
-				.likes(board.getLikes())
+				.likes(board.getLikes().size())
 				.build();
 
 		return boardDetailDto;
