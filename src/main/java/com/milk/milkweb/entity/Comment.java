@@ -1,5 +1,6 @@
 package com.milk.milkweb.entity;
 
+import com.milk.milkweb.dto.CommentUpdateDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,4 +35,9 @@ public class Comment {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_id")
 	private Board board;
+
+	public void updateComment(CommentUpdateDto commentUpdateDto) {
+		comment = commentUpdateDto.getComment();
+		updatedTime = LocalDateTime.now();
+	}
 }
