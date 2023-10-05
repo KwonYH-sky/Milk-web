@@ -111,9 +111,19 @@
                 <div class="fw-bold col-2">${c.memberName}</div>
                 <div class="col-10">
                   ${c.comment}</div>
+                 `;
+            if (c.isUserCommentAuthor) {
+              comments += `
+              <div>
+                <button id="uc_${c.id}" type="button" class="btn btn-outline-primary">수정</button>
+                <button id="dc_${c.id}" type="button" class="btn btn-outline-danger">삭제</button>
               </div>
+              `
+            }
+            comments += `
+               </div>
             </li>
-          `;
+            `;
           }
           $('#comments').html(comments);
 
@@ -135,6 +145,10 @@
         });
     };
 
+    const updateCommentForm = () => {
+
+    };
+
     const updateComment = () => {
       const header = $("meta[name='_csrf_header']").attr("content");
       const token = $("meta[name='_csrf']").attr("content");
@@ -142,12 +156,12 @@
       const url = '/comment/update';
 
       axios.patch(url, data)
-      .then(res => {
+        .then(res => {
 
-      })
-      .catch(err => {
+        })
+        .catch(err => {
 
-      })
+        })
     };
 
     const deleteComment = () => {
@@ -155,12 +169,12 @@
       const token = $("meta[name='_csrf']").attr("content");
 
       axios.delete(url)
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.error(err); 
-      })
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.error(err);
+        })
     };
   </script>
 

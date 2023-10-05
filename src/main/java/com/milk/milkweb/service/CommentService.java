@@ -46,24 +46,27 @@ public class CommentService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<CommentListDto> getCommentList(int page, Long boardId) {
+	public Page<CommentListDto> getCommentList(int page, Long boardId, String email) {
 		Pageable pageable = PageRequest.of(page, 10);
 		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
+		Member member = Optional.of(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 
-		 Page<CommentListDto> commentListDtos = comments.map(comment -> CommentListDto.builder()
+		Page<CommentListDto> commentListDtos = comments.map(comment -> CommentListDto.builder()
+				.id(comment.getId())
 				.memberName(comment.getMember().getName())
 				.comment(comment.getComment())
+				.isUserCommentAuthor(member.equals(comment.getMember()))
 				.build());
 
-		 return commentListDtos;
+		return commentListDtos;
 	}
 
-	public void updateComment(CommentUpdateDto commentUpdateDto, String email){
+	public void updateComment(CommentUpdateDto commentUpdateDto, String email) {
 		Comment comment = validateMemberComment(commentUpdateDto.getId(), email);
 		comment.updateComment(commentUpdateDto);
 	}
 
-	public void deleteComment(Long id, String email){
+	public void deleteComment(Long id, String email) {
 		Comment comment = validateMemberComment(id, email);
 		commentRepository.delete(comment);
 	}

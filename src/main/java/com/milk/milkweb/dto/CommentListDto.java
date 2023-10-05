@@ -9,9 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentListDto {
+	private Long id;
 
 	private String memberName;
 
 	private String comment;
+
+	private Boolean isUserCommentAuthor;
 
 }

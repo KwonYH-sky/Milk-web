@@ -31,9 +31,9 @@ public class CommentController {
 	}
 
 	@GetMapping("/board/{boardId}")
-	public @ResponseBody ResponseEntity getCommentPage(@PathVariable Long boardId, @RequestParam("page") int page) {
+	public @ResponseBody ResponseEntity getCommentPage(@PathVariable Long boardId, @RequestParam("page") int page, Principal principal) {
 		try {
-			Page<CommentListDto> dtoPage = commentService.getCommentList(page, boardId);
+			Page<CommentListDto> dtoPage = commentService.getCommentList(page, boardId, principal.getName());
 			return new ResponseEntity<>(dtoPage, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
