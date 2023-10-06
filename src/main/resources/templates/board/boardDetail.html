@@ -103,22 +103,33 @@
           console.log(res)
           const data = res.data;
           let comments = '';
+          // 로그인한 회원의 댓글Id들
+          const loginComments = [];
 
           for (const c of data.content) {
             comments += `
-            <li class="border-bottom border-dark-subtle">
+            <li id="comment_${c.id}" class="border-bottom border-dark-subtle">
               <div class="row my-3">
                 <div class="fw-bold col-2">${c.memberName}</div>
                 <div class="col-10">
                   ${c.comment}</div>
-                 `;
+            `;
+            
+            // 로그인한 회원의 댓글이면 수정 & 삭제 버튼 추가 and 배열에 저장
             if (c.isUserCommentAuthor) {
               comments += `
               <div>
                 <button id="uc_${c.id}" type="button" class="btn btn-outline-primary">수정</button>
                 <button id="dc_${c.id}" type="button" class="btn btn-outline-danger">삭제</button>
               </div>
-              `
+              `;
+              // 수정할 때 쓸 comment 정보
+              const commentDetail = {
+                'id': c.id,
+                'member' : c.memberName,
+                'content' : c.comment
+              };
+              loginComments.push(commentDetail);
             }
             comments += `
                </div>
@@ -127,6 +138,13 @@
           }
           $('#comments').html(comments);
 
+          // 클릭 이벤트 추가 (DOM 메소드 & JQuery)
+          loginComments.map(comment => {
+            document.getElementById("uc_" + comment.id).onclick = () => updateCommentForm(comment);
+            $('#dc_' + comment.id).click(() => deleteComment(comment.id));
+          });
+
+          // 댓글 페이징
           let commentPage = '';
           for (let i = 0; i < data.totalPages; i++) {
             commentPage += `
@@ -135,6 +153,7 @@
           }
           $('#comment_paging').html(commentPage);
 
+          // 페이지 클릭 이벤트 추가
           for (let i = 0; i < data.totalPages; i++) {
             $('#page' + i).click(() => getComments(i));
           }
@@ -145,7 +164,21 @@
         });
     };
 
-    const updateCommentForm = () => {
+    const updateCommentForm = (comment) => {
+      const prevComment = $('#comment_' + comment.id).val();
+
+      $('#comment_' + comment.id).html(`
+      <div class="row my-3">
+              <div class="fw-bold col-2">${comment.member}</div>
+              <div class="col-10">
+                <textarea class="form-control" id="commentUpdate_input" rows="3" placeholder="댓글을 수정해주세요.">${comment.content}</textarea>
+                <button type="button" id="commentUpdate_btn" class="btn btn-success my-3">수정하기</button>
+                <button type="button" id="commentCancel_btn" class="btn btn-warning my-3">취소</button>
+              </div>
+      </div>
+      `);
+
+      
 
     };
 
@@ -164,13 +197,18 @@
         })
     };
 
-    const deleteComment = () => {
+    const deleteComment = (commentId) => {
       const header = $("meta[name='_csrf_header']").attr("content");
       const token = $("meta[name='_csrf']").attr("content");
 
-      axios.delete(url)
+      const url = '/comment/delete/'
+
+      axios.delete(url + commentId)
         .then(res => {
           console.log(res)
+          alert(res.data);
+
+          getComments(0);
         })
         .catch(err => {
           console.error(err);
