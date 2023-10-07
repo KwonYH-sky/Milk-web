@@ -49,7 +49,7 @@ public class CommentService {
 	public Page<CommentListDto> getCommentList(int page, Long boardId, String email) {
 		Pageable pageable = PageRequest.of(page, 10);
 		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
-		Member member = Optional.of(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElse(new Member());
 
 		Page<CommentListDto> commentListDtos = comments.map(comment -> CommentListDto.builder()
 				.id(comment.getId())

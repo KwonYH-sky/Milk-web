@@ -114,7 +114,7 @@
                 <div class="col-10">
                   ${c.comment}</div>
             `;
-            
+
             // 로그인한 회원의 댓글이면 수정 & 삭제 버튼 추가 and 배열에 저장
             if (c.isUserCommentAuthor) {
               comments += `
@@ -126,8 +126,8 @@
               // 수정할 때 쓸 comment 정보
               const commentDetail = {
                 'id': c.id,
-                'member' : c.memberName,
-                'content' : c.comment
+                'member': c.memberName,
+                'content': c.comment
               };
               loginComments.push(commentDetail);
             }
@@ -165,7 +165,7 @@
     };
 
     const updateCommentForm = (comment) => {
-      const prevComment = $('#comment_' + comment.id).val();
+      const prevComment = $('#comment_' + comment.id).html();
 
       $('#comment_' + comment.id).html(`
       <div class="row my-3">
@@ -178,23 +178,42 @@
       </div>
       `);
 
-      
+      $('#commentUpdate_btn').click(() => {
+        const header = $("meta[name='_csrf_header']").attr("content");
+        const token = $("meta[name='_csrf']").attr("content");
 
-    };
+        const url = '/comment/update';
+        const data = {
+          'id': comment.id,
+          'comment': $('#commentUpdate_input').val()
+        };
+        const csrfToken = {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            [header]: token
+          }
+        };
 
-    const updateComment = () => {
-      const header = $("meta[name='_csrf_header']").attr("content");
-      const token = $("meta[name='_csrf']").attr("content");
+        axios.patch(url, data, csrfToken)
+          .then(res => {
+            console.log(res);
+            alert('댓글 수정 완료');
+            getComments(0);
+          })
+          .catch(err => {
+            console.log(err);
+          });
 
-      const url = '/comment/update';
 
-      axios.patch(url, data)
-        .then(res => {
+      });
 
-        })
-        .catch(err => {
+      $('#commentCancel_btn').click(() => {
+        $('#comment_' + comment.id).html(prevComment);
 
-        })
+        document.getElementById("uc_" + comment.id).onclick = () => updateCommentForm(comment);
+        $('#dc_' + comment.id).click(() => deleteComment(comment.id));
+      });
+
     };
 
     const deleteComment = (commentId) => {
@@ -202,8 +221,14 @@
       const token = $("meta[name='_csrf']").attr("content");
 
       const url = '/comment/delete/'
+      const csrfToken = {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          [header]: token
+        }
+      };
 
-      axios.delete(url + commentId)
+      axios.delete(url + commentId, csrfToken)
         .then(res => {
           console.log(res)
           alert(res.data);
@@ -274,7 +299,7 @@
     </div>
 
     <div class="m-5">
-      <div class="form-floating">
+      <div class="form-floating" sec:authorize="isAuthenticated()">
         <textarea class="form-control" id="comment_input" placeholder="댓글을 남겨 주세요." style="height: 100px"></textarea>
         <label for="floatingTextarea">댓글을 남겨 주세요.</label>
         <button type="button" id="comment_btn" class="btn btn-primary my-3">댓글 쓰기</button>

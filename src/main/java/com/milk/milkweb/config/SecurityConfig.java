@@ -36,15 +36,16 @@ public class SecurityConfig {
 						response.sendRedirect("/")));
 
 		http
-				.sessionManagement((sessionManagement)->
+				.sessionManagement((sessionManagement) ->
 						sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 				.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers(
-							new AntPathRequestMatcher("/"),
-							new AntPathRequestMatcher("/member/**"),
-							new AntPathRequestMatcher("/board/**")).permitAll()
+								new AntPathRequestMatcher("/"),
+								new AntPathRequestMatcher("/member/**"),
+								new AntPathRequestMatcher("/board/**"),
+								new AntPathRequestMatcher("/comment/**")).permitAll()
 						.anyRequest().authenticated()
-		);
+				);
 
 		http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
 				.authenticationEntryPoint((request, response, authException) ->
@@ -69,6 +70,7 @@ public class SecurityConfig {
 				new AntPathRequestMatcher("/css/**"),
 				new AntPathRequestMatcher("/js/**"),
 				new AntPathRequestMatcher("/img/**"),
+				new AntPathRequestMatcher("favicon.ico"),
 				new AntPathRequestMatcher("/error")
 		);
 	}
