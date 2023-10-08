@@ -6,7 +6,7 @@ import com.milk.milkweb.dto.CommentUpdateDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Comment;
 import com.milk.milkweb.entity.Member;
-import com.milk.milkweb.exception.MemberValidation;
+import com.milk.milkweb.exception.MemberValidationException;
 import com.milk.milkweb.repository.BoardRepository;
 import com.milk.milkweb.repository.CommentRepository;
 import com.milk.milkweb.repository.MemberRepository;
@@ -47,7 +47,7 @@ public class CommentService {
 
 	@Transactional(readOnly = true)
 	public Page<CommentListDto> getCommentList(int page, Long boardId, String email) {
-		Pageable pageable = PageRequest.of(page, 10);
+		Pageable pageable = PageRequest.of(page, 15);
 		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
 		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElse(new Member());
 
@@ -76,7 +76,7 @@ public class CommentService {
 		Member member = Optional.of(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 
 		if (!member.equals(comment.getMember())) {
-			throw new MemberValidation("수정 & 삭제 권한이 없습니다.");
+			throw new MemberValidationException("수정 & 삭제 권한이 없습니다.");
 		}
 
 		return comment;

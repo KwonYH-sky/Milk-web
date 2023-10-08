@@ -4,6 +4,7 @@ import com.milk.milkweb.dto.BoardLikeDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.BoardLike;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.AlreadyLikeException;
 import com.milk.milkweb.repository.BoardLikeRepository;
 import com.milk.milkweb.repository.BoardRepository;
 import com.milk.milkweb.repository.MemberRepository;
@@ -23,13 +24,13 @@ public class BoardLikeService {
 	private final MemberRepository memberRepository;
 	private final BoardLikeRepository boardLikeRepository;
 
-	public BoardLike addBoardLike(BoardLikeDto boardLikeDto, String email) throws IllegalAccessException {
+	public BoardLike addBoardLike(BoardLikeDto boardLikeDto, String email) {
 		Board board = boardRepository.findById(boardLikeDto.getBoardId()).orElseThrow(EntityNotFoundException::new);
 		Optional<Member> memberOp = Optional.ofNullable(memberRepository.findByEmail(email));
 		Member member = memberOp.orElseThrow(EntityNotFoundException::new);
 
 		if(boardLikeRepository.findByBoardAndMember(board, member).isPresent()){
-			throw new IllegalAccessException("이미 좋아요를 했습니다.");
+			throw new AlreadyLikeException("이미 좋아요를 했습니다.");
 		}
 
 		return boardLikeRepository.save(BoardLike.createBoardLikeEntity(board, member));

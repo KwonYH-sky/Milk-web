@@ -21,7 +21,7 @@
 
       // 댓글 등록 이벤트 추가
       const commentBth = document.getElementById("comment_btn");
-      commentBth.addEventListener('click', writeComment);
+      commentBth?.addEventListener('click', writeComment); // 비로그인 시 null이기 때문에 옵셔널체이닝
     });
 
     const likeBoard = async () => {
@@ -44,9 +44,31 @@
           alert("추천 완료");
         })
         .catch(err => {
-          alert(err.response.data);
           console.error(err);
-        })
+          if (err.response) {
+            // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
+            console.log(err.response.data);
+            console.log(err.response.status);
+            console.log(err.response.headers);
+
+            // 로그인이 아닐 때.
+            if (err.response.status == 401) {
+              if (confirm("로그인이 필요합니다. 로그인 하시겠습니까?")) {
+                location.href = '/member/login';
+              }
+            } else { // 그 외
+              alert(err.response.data.message);
+            }
+
+          } else if (err.request) {
+            // 요청이 전송되었지만, 응답이 수신되지 않았습니다. 
+            // 'err.request'는 브라우저에서 XMLHtpRequest 인스턴스 입니다.
+            console.log(err.request);
+          } else {
+            // 오류가 발생한 요청을 설정하는 동안 문제가 발생했습니다.
+            console.log('Error', err.message);
+          }
+        });
 
       await axios.get(url + '/' + boardId)
         .then(res => {
@@ -55,7 +77,7 @@
         })
         .catch(err => {
           console.error(err);
-        })
+        });
     };
 
     const writeComment = async () => {
@@ -82,7 +104,13 @@
         })
         .catch(err => {
           console.error(err);
-          alert("댓글 등록 중 오류가 발생했습니다.");
+
+          // @Valid error 메시지
+          let errMessage = '';
+          for (const e of err.response.data.errors) {
+            errMessage += e.defaultMessage + '\n';
+          }
+          alert(errMessage);
         });
 
       await getComments(0);
@@ -123,7 +151,7 @@
                 <button id="dc_${c.id}" type="button" class="btn btn-outline-danger">삭제</button>
               </div>
               `;
-              // 수정할 때 쓸 comment 정보
+              // 수정할 때 넘겨줄 comment 정보
               const commentDetail = {
                 'id': c.id,
                 'member': c.memberName,
@@ -202,6 +230,13 @@
           })
           .catch(err => {
             console.log(err);
+            
+            // @Valid error 메시지
+            let errMessage = '';
+            for (const e of err.response.data.errors) {
+              errMessage += e.defaultMessage + '\n';
+            }
+            alert(errMessage);
           });
 
 

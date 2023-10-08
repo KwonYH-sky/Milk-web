@@ -4,6 +4,7 @@ import com.milk.milkweb.dto.CommentFormDto;
 import com.milk.milkweb.dto.CommentListDto;
 import com.milk.milkweb.dto.CommentUpdateDto;
 import com.milk.milkweb.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class CommentController {
 	private final CommentService commentService;
 
 	@PostMapping("/write")
-	public @ResponseBody ResponseEntity saveComment(@RequestBody CommentFormDto commentFormDto, Principal principal) {
+	public @ResponseBody ResponseEntity saveComment(@RequestBody @Valid CommentFormDto commentFormDto, Principal principal) {
 		try {
 			commentService.saveComment(commentFormDto, principal.getName());
 		} catch (Exception e) {
@@ -42,7 +43,7 @@ public class CommentController {
 	}
 
 	@PatchMapping("/update")
-	public @ResponseBody ResponseEntity updateComment(@RequestBody CommentUpdateDto commentUpdateDto, Principal principal) {
+	public @ResponseBody ResponseEntity updateComment(@RequestBody @Valid CommentUpdateDto commentUpdateDto, Principal principal) {
 		try {
 			commentService.updateComment(commentUpdateDto, principal.getName());
 			return new ResponseEntity<>(commentUpdateDto, HttpStatus.OK);

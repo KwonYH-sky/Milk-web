@@ -104,11 +104,13 @@ public class BoardController {
 	}
 
 	@PostMapping(value = "/like")
-	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, Principal principal) throws IllegalAccessException {
+	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, Principal principal) {
+		if (principal == null)
+			return new ResponseEntity<>("Not Login", HttpStatus.UNAUTHORIZED);
 		try {
 			boardLikeService.addBoardLike(boardLikeDto, principal.getName());
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 
 		return new ResponseEntity<>(boardLikeDto, HttpStatus.OK);
