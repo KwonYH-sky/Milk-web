@@ -43,7 +43,8 @@ public class SecurityConfig {
 								new AntPathRequestMatcher("/"),
 								new AntPathRequestMatcher("/member/**"),
 								new AntPathRequestMatcher("/board/**"),
-								new AntPathRequestMatcher("/comment/**")).permitAll()
+								new AntPathRequestMatcher("/comment/**")
+							).permitAll()
 						.anyRequest().authenticated()
 				);
 
@@ -71,7 +72,11 @@ public class SecurityConfig {
 				new AntPathRequestMatcher("/js/**"),
 				new AntPathRequestMatcher("/img/**"),
 				new AntPathRequestMatcher("favicon.ico"),
-				new AntPathRequestMatcher("/error")
+				new AntPathRequestMatcher("/error"),
+				// SpringFox Swagger
+				new AntPathRequestMatcher("/v3/api-docs/**"),
+				new AntPathRequestMatcher("/swagger-resources/**"),
+				new AntPathRequestMatcher("/swagger-ui/**")
 		);
 	}
 }
