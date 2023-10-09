@@ -1,6 +1,7 @@
 package com.milk.milkweb.service;
 
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.AlreadyRegisterException;
 import com.milk.milkweb.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
@@ -9,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -25,17 +28,13 @@ public class MemberService implements UserDetailsService {
 	public void validateDuplicateMember(Member member)  {
 		Member findMember = memberRepository.findByEmail(member.getEmail());
 		if (findMember != null) {
-			throw new IllegalStateException("이미 가입된 이메일입니다.");
+			throw new AlreadyRegisterException("이미 가입된 이메일입니다.");
 		}
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Member member = memberRepository.findByEmail(email);
-
-		if (member == null) {
-			throw new UsernameNotFoundException(email);
-		}
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(() -> new UsernameNotFoundException(email));
 
 		return User.builder()
 				.username(member.getEmail())
