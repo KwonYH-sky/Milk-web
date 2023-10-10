@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -44,7 +46,7 @@ public class SecurityConfig {
 								new AntPathRequestMatcher("/member/**"),
 								new AntPathRequestMatcher("/board/**"),
 								new AntPathRequestMatcher("/comment/**")
-							).permitAll()
+						).permitAll()
 						.anyRequest().authenticated()
 				);
 
@@ -65,19 +67,34 @@ public class SecurityConfig {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
+	private static final String[] IGNORE_WHITELIST = {
+			"/swagger-resources",
+			"/swagger-resources/**",
+			"/configuration/ui",
+			"/configuration/security",
+			"/webjars/**",
+			"/v3/api-docs/**",
+			"/v3/api-docs.yaml",
+			"/api/public/**",
+			"/api/public/authenticate",
+			"/actuator/*",
+			"/swagger-ui.html",
+			"/swagger-ui/**"
+	};
+
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return web -> web.ignoring().requestMatchers(
+		return web -> web.ignoring()
+				.requestMatchers(
 				new AntPathRequestMatcher("/css/**"),
 				new AntPathRequestMatcher("/js/**"),
 				new AntPathRequestMatcher("/img/**"),
 				new AntPathRequestMatcher("favicon.ico"),
-				new AntPathRequestMatcher("/error"),
-				// SpringFox Swagger
-				new AntPathRequestMatcher("/v3/api-docs/**"),
-				new AntPathRequestMatcher("/swagger-resources/**"),
-				new AntPathRequestMatcher("/swagger-ui/**")
-		);
+				new AntPathRequestMatcher("/error"))
+
+				.requestMatchers(Arrays.stream(IGNORE_WHITELIST)
+						.map(AntPathRequestMatcher::antMatcher)
+						.toArray(AntPathRequestMatcher[]::new));
 	}
 }
 
