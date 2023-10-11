@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @RequestMapping(value = "/board")
 @Controller
@@ -25,7 +26,11 @@ public class BoardController {
 	private final BoardLikeService boardLikeService;
 
 	@GetMapping(value = "/write")
-	public String entryWriteBoardForm (Model model) {
+	public String entryWriteBoardForm(Model model, Principal principal) {
+		if (!Optional.ofNullable(principal).isPresent()) {
+			model.addAttribute("errorMessage", "로그인 해주세요.");
+			return "redirect:";
+		}
 		model.addAttribute("boardFormDto", new BoardFormDto());
 		return "board/boardForm";
 	}
@@ -33,7 +38,7 @@ public class BoardController {
 	@PostMapping(value = "/write")
 	public String writeBoard(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Principal principal, Model model) {
 
-		if (bindingResult.hasErrors()){
+		if (bindingResult.hasErrors()) {
 			return "board/boardForm";
 		}
 		try {
@@ -47,7 +52,7 @@ public class BoardController {
 	}
 
 	@GetMapping(value = {"", "/list"})
-	public String getBoardList (Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+	public String getBoardList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
 		try {
 			Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
 			model.addAttribute("paging", boardListDtos);

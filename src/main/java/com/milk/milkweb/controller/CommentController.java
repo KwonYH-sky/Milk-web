@@ -32,7 +32,7 @@ public class CommentController {
 	}
 
 	@GetMapping("/board/{boardId}")
-	public @ResponseBody ResponseEntity getCommentPage(@PathVariable Long boardId, @RequestParam("page") int page, Principal principal) {
+	public @ResponseBody ResponseEntity getCommentPage(@PathVariable Long boardId, @RequestParam(value = "page", defaultValue = "0") int page, Principal principal) {
 		String email = principal != null ? principal.getName() : "Not Login";
 		try {
 			Page<CommentListDto> dtoPage = commentService.getCommentList(page, boardId, email);
