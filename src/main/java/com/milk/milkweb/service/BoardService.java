@@ -57,6 +57,12 @@ public class BoardService {
 		return boardListDtos;
 	}
 
+	@Transactional(readOnly = true)
+	public Page<BoardListDto> getSearchBoardList(BoardSearchDto boardSearchDto, int page) {
+		Pageable pageable = PageRequest.of(page, 10);
+		return boardRepository.findBySearch(boardSearchDto, pageable);
+	}
+
 
 	@Transactional
 	public BoardDetailDto getDetail(Long id) {

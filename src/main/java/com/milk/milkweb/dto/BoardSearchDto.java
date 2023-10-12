@@ -1,15 +1,18 @@
 package com.milk.milkweb.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
-@Getter @Builder
-@AllArgsConstructor
+@Getter @Setter
+@NoArgsConstructor
 public class BoardSearchDto {
 
 	private String searchType;
 
 	private String keyword;
+
+	public Boolean isSearching() {
+		return StringUtils.isNotEmpty(searchType) && StringUtils.isNotBlank(keyword);
+	}
 
 }

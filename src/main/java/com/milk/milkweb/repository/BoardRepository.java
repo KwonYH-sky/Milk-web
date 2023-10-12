@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>, BoardCustomRepository {
 	Page<Board> findAll(Pageable pageable);
 
 	@Query(value = "SELECT * FROM Board b ORDER BY b.board_id DESC LIMIT 5", nativeQuery = true)

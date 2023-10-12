@@ -38,7 +38,7 @@ public class CommentController {
 			Page<CommentListDto> dtoPage = commentService.getCommentList(page, boardId, email);
 			return new ResponseEntity<>(dtoPage, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class CommentController {
 			commentService.deleteComment(commentId, principal.getName());
 			return new ResponseEntity<>("댓글 삭제 성공", HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.milk.milkweb.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,4 +22,13 @@ public class BoardListDto {
 
 	private LocalDateTime createdTime;
 
+	@QueryProjection
+	public BoardListDto(Long id, String title, String memberName, int likes, int views, LocalDateTime createdTime) {
+		this.id = id;
+		this.title = title;
+		this.memberName = memberName;
+		this.likes = likes;
+		this.views = views;
+		this.createdTime = createdTime;
+	}
 }

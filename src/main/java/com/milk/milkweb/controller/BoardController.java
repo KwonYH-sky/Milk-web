@@ -51,15 +51,20 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
-	@GetMapping(value = {"", "/list"})
-	public String getBoardList(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+	@GetMapping(value = {"/", "/list"})
+	public String getBoardList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, BoardSearchDto boardSearchDto) {
 		try {
-			Page<BoardListDto> boardListDtos = boardService.getBoardList(page);
+			Page<BoardListDto> boardListDtos;
+			if (boardSearchDto.isSearching()){
+				boardListDtos = boardService.getSearchBoardList(boardSearchDto, page);
+			} else {
+				boardListDtos = boardService.getBoardList(page);
+			}
 			model.addAttribute("paging", boardListDtos);
+			model.addAttribute("boardSearchDto", boardSearchDto); // 현재 검색 파라미터를 모델에 추가
 		} catch (Exception e) {
 			model.addAttribute("paging", boardService.getBoardList(0));
 		}
-
 		return "/board/boardList";
 	}
 
@@ -103,7 +108,7 @@ public class BoardController {
 			boardService.deleteBoard(id, principal.getName());
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:/";
+			return "redirect:";
 		}
 		return "redirect:/board/list";
 	}
