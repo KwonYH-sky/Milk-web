@@ -53,7 +53,7 @@
                         <div th:text="${board.views}"></div>
                     </td>
                     <td>
-                        <div th:text="${board.createdTime}"></div>
+                        <div th:text="${#dates.format(board.createdTime, 'yyyy.MM.dd HH:mm:ss')}"></div>
                     </td>
                 </tr>
             </tbody>
@@ -68,7 +68,6 @@
                 <div class="row g-0 my-4 justify-content-center">
                     <div class="col-1">
                         <select class="form-select" name="searchType" th:value="${boardSearchDto.searchType}">
-                            <option selected>검색</option>
                             <option value="title">제목</option>
                             <option value="content">본문</option>
                             <option value="writer">작성자</option>
@@ -88,17 +87,24 @@
         <div th:if="${!paging.isEmpty()}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
-                    <a th:href="@{/board/list(page=${paging.number-1}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" class="page-link">
+                    <a th:if="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${paging.number-1}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" class="page-link">
+                        <span>이전</span>
+                    </a>
+                    <a th:unless="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${paging.number-1})}" class="page-link">
                         <span>이전</span>
                     </a>
                 </li>
                 <li th:each="page : ${#numbers.sequence(0, paging.totalPages-1)}"
                     th:if="${page >= paging.number-5 and page <= paging.number+5}"
                     th:classappend="${page == paging.number} ? 'active'" class="page-item">
-                    <a th:href="@{/board/list(page=${page}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" th:text="${page+1}" class="page-link"></a>
+                    <a th:if="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${page}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" th:text="${page+1}" class="page-link"></a>
+                    <a th:unless="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${page})}" th:text="${page+1}" class="page-link"></a>
                 </li>
                 <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
-                    <a th:href="@{/board/list(page=${paging.number+1}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" class="page-link">
+                    <a th:if="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${paging.number+1}, searchType=${boardSearchDto.searchType}, keyword=${boardSearchDto.keyword})}" class="page-link">
+                        <span>다음</span>
+                    </a>
+                    <a th:unless="${boardSearchDto.isSearching}" th:href="@{/board/list(page=${paging.number+1})}" class="page-link">
                         <span>다음</span>
                     </a>
                 </li>
