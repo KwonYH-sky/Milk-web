@@ -6,6 +6,7 @@ import com.milk.milkweb.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RequestMapping(value = "/board")
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
 	private final BoardService boardService;
@@ -27,7 +29,8 @@ public class BoardController {
 
 	@GetMapping(value = "/write")
 	public String entryWriteBoardForm(Model model, Principal principal) {
-		if (!Optional.ofNullable(principal).isPresent()) {
+		log.debug("principal.getName()" + principal.getName());
+		if (!Optional.of(principal).isPresent()) {
 			model.addAttribute("errorMessage", "로그인 해주세요.");
 			return "redirect:";
 		}
@@ -37,7 +40,7 @@ public class BoardController {
 
 	@PostMapping(value = "/write")
 	public String writeBoard(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Principal principal, Model model) {
-
+		log.debug("principal.getName() = "+ principal.getName());
 		if (bindingResult.hasErrors()) {
 			return "board/boardForm";
 		}

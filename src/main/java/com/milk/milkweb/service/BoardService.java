@@ -4,6 +4,7 @@ package com.milk.milkweb.service;
 import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.MemberValidationException;
 import com.milk.milkweb.repository.BoardRepository;
 import com.milk.milkweb.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -26,7 +28,7 @@ public class BoardService {
 
 
 	public Board saveBoard(BoardFormDto boardFormDto, String email) {
-		Member member = memberRepository.findByEmail(email);
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 		Board board = Board.builder()
 					.title(boardFormDto.getTitle())
 					.content(boardFormDto.getContent())
@@ -102,16 +104,16 @@ public class BoardService {
 		return board;
 	}
 
-	public void deleteBoard(Long id, String email) throws IllegalAccessException {
+	public void deleteBoard(Long id, String email) {
 		Board board = validateMemberBoard(id, email);
 		boardRepository.delete(board);
 	}
 
-	public Board validateMemberBoard(Long id, String email) throws IllegalAccessException {
+	public Board validateMemberBoard(Long id, String email) {
 		Member member = memberRepository.findByEmail(email);
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		if (member != board.getMember()) {
-			throw new IllegalAccessException("권한이 없습니다.");
+			throw new MemberValidationException("권한이 없습니다.");
 		}
 
 		return board;

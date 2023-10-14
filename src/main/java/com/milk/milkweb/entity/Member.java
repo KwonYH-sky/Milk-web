@@ -41,4 +41,8 @@ public class Member {
 				.role(Role.USER)
 				.build();
 	}
+
+	public String getRoleKey(){
+		return this.role.getKey();
+	}
 }

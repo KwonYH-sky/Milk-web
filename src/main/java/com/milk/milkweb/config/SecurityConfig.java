@@ -1,6 +1,8 @@
 package com.milk.milkweb.config;
 
+import com.milk.milkweb.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +20,10 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+	private final CustomOAuth2UserService customOAuth2UserService;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,6 +36,11 @@ public class SecurityConfig {
 				.failureHandler((request, response, exception) ->
 						response.sendRedirect("/member/login/error"))
 		);
+
+		http.oauth2Login(oauth2 -> oauth2
+				.userInfoEndpoint(userInfoEndpointConfig ->
+						userInfoEndpointConfig
+								.userService(customOAuth2UserService)));
 
 		http.logout(logout -> logout
 				.logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
