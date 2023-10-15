@@ -1,10 +1,10 @@
 package com.milk.milkweb.service;
 
+import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.exception.AlreadyRegisterException;
 import com.milk.milkweb.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,10 +36,6 @@ public class MemberService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(() -> new UsernameNotFoundException(email));
 
-		return User.builder()
-				.username(member.getEmail())
-				.password(member.getPassword())
-				.roles(member.getRole().toString())
-				.build();
+		return new CustomUserDetails(member);
 	}
 }

@@ -1,15 +1,14 @@
 package com.milk.milkweb.service;
 
+import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.dto.OAuthAttributes;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -37,10 +36,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 		Member member = saveOrUpdate(attributes);
 
-		return new DefaultOAuth2User(Collections
-				.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
-				attributes.getAttributes(),
-				attributes.getNameAttributeKey());
+		return new CustomUserDetails(member, attributes.getAttributes());
 	}
 
 	private Member saveOrUpdate(OAuthAttributes attributes) {

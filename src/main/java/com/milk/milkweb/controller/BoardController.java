@@ -10,13 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.Optional;
 
 @RequestMapping(value = "/board")
 @Controller
@@ -28,19 +26,15 @@ public class BoardController {
 	private final BoardLikeService boardLikeService;
 
 	@GetMapping(value = "/write")
-	public String entryWriteBoardForm(Model model, Principal principal) {
-		log.debug("principal.getName()" + principal.getName());
-		if (!Optional.of(principal).isPresent()) {
-			model.addAttribute("errorMessage", "로그인 해주세요.");
-			return "redirect:";
-		}
+	public String entryWriteBoardForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+		log.debug("principal = " + principal);
 		model.addAttribute("boardFormDto", new BoardFormDto());
 		return "board/boardForm";
 	}
 
 	@PostMapping(value = "/write")
-	public String writeBoard(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, Principal principal, Model model) {
-		log.debug("principal.getName() = "+ principal.getName());
+	public String writeBoard(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails principal, Model model) {
+		log.debug("principal = "+ principal);
 		if (bindingResult.hasErrors()) {
 			return "board/boardForm";
 		}
@@ -85,7 +79,7 @@ public class BoardController {
 	}
 
 	@GetMapping(value = "/update/{id}")
-	public String getBoardUpdateForm(@PathVariable Long id, Principal principal, Model model) {
+	public String getBoardUpdateForm(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails principal, Model model) {
 		try {
 			BoardUpdateDto boardUpdateDto = boardService.getUpdateForm(id, principal.getName());
 			model.addAttribute("boardUpdateDto", boardUpdateDto);
@@ -106,7 +100,7 @@ public class BoardController {
 	}
 
 	@DeleteMapping(value = "/delete/{id}")
-	public String deleteBoard(@PathVariable Long id, Principal principal, Model model) throws Exception {
+	public String deleteBoard(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails principal, Model model) throws Exception {
 		try {
 			boardService.deleteBoard(id, principal.getName());
 		} catch (Exception e) {
@@ -117,7 +111,7 @@ public class BoardController {
 	}
 
 	@PostMapping(value = "/like")
-	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, Principal principal) {
+	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, @AuthenticationPrincipal CustomUserDetails principal) {
 		if (principal == null)
 			return new ResponseEntity<>("Not Login", HttpStatus.UNAUTHORIZED);
 		try {
