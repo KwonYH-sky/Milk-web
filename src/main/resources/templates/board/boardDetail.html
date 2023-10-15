@@ -43,10 +43,10 @@
             <span th:text="${boardDetail.view}"></span>
           </div>
           <div class="mb-2"> 등록 시간:
-            <span th:text="${#dates.format(boardDetail.createdTime, 'yyyy.MM.dd HH:mm:ss')}"></span>
+            <span th:text="${#temporals.format(boardDetail.createdTime, 'yyyy.MM.dd HH:mm:ss')}"></span>
           </div>
           <div class="mb-2" th:if="${not #strings.isEmpty(boardDetail.updatedTime)}"> 수정 시간:
-            <span th:text="${#dates.format(boardDetail.updatedTime, 'yyyy.MM.dd HH:mm:ss')}"></span>
+            <span th:text="${#temporals.format(boardDetail.updatedTime, 'yyyy.MM.dd HH:mm:ss')}"></span>
           </div>
         </div>
       </div>

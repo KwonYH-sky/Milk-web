@@ -53,7 +53,7 @@
                         <div th:text="${board.views}"></div>
                     </td>
                     <td>
-                        <div th:text="${#dates.format(board.createdTime, 'yyyy.MM.dd HH:mm:ss')}"></div>
+                        <div th:text="${#temporals.format(board.createdTime, 'yyyy.MM.dd HH:mm')}"></div>
                     </td>
                 </tr>
             </tbody>
