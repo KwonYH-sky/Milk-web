@@ -34,17 +34,42 @@
         </div>
 
         <div class="row mb-3 mx-5">
-            <div class="col-4 themed-grid-col">
-                <div class="border rounded-top">
-                    <a href="/board/list" class="text-decoration-none text-light bg-primary d-block p-1">
-                        <span class="mx-2">최신 글 보기</span>
-                    </a>
-                    <ul>
-                        <li th:each="board : ${boards}">
-                            <a class="text-decoration-none" th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="col-6 themed-grid-col">
+              <div class="border rounded-top">
+                <a href="/board/list" class="text-decoration-none text-light bg-primary d-block p-1">
+                  <span class="mx-2">최신 글 보기</span>
+                </a>
+                <ul class="mt-2">
+                  <li th:each="board : ${boards}">
+                    <a class="text-decoration-none mt-2" th:href="@{/board/{id}(id=${board.id})}"
+                      th:text="${board.title}"></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="border rounded-top">
+                <a href="/board/list" class="text-decoration-none text-light bg-primary d-block p-1">
+                  <span class="mx-2">일일 Best</span>
+                </a>
+                <ul>
+                  <li th:each="board : ${daysBest}">
+                    <a class="text-decoration-none mt-2" th:href="@{/board/{id}(id=${board.id})}"
+                      th:text="${board.title}"></a>
+                  </li>
+                </ul>
+              </div>
+              <div class="border rounded-top my-3">
+                <a href="/board/list" class="text-decoration-none text-light bg-primary d-block p-1">
+                  <span class="mx-2">주간 Best</span>
+                </a>
+                <ul>
+                  <li th:each="board : ${weeklyBest}">
+                    <a class="text-decoration-none mt-2" th:href="@{/board/{id}(id=${board.id})}"
+                      th:text="${board.title}"></a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
         </div>

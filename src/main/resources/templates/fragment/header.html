@@ -1,20 +1,48 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <body>
-    <header th:fragment="header" class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-        <div class="col-md-3 mb-2 mb-md-0">
-          <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none mx-5">
-            <img src="/img/icon.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-            <span class="ms-2 h5">Milk Web</span>
-          </a>
+  <header th:fragment="header"
+    class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    <nav class="navbar bg-body-tertiary fixed-top p-2">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="/">
+          <img src="/img/icon.png" alt="Logo" width="30" height="24" class="align-text-top">
+          <span class="ms-1 h5">Milk Web</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+          aria-controls="offcanvasNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/board/list">Post</a>
+              </li>
+              <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="nav-link text-success" href="/member/login">Login</a>
+              </li>
+              <li class="nav-item" sec:authorize="isAuthenticated()">
+                <a class="nav-link text-danger" href="/member/logout">Logout</a>
+              </li>
+              <li class="nav-item" sec:authorize="isAnonymous()">
+                <a class="nav-link text-primary" href="/member/register">Sign-up</a>
+              </li>
+
+            </ul>
+          </div>
         </div>
-  
-        <div class="col-md-3 text-end">
-          <button type="button" class="btn btn-outline-primary me-2" sec:authorize="isAnonymous()" th:onclick="|location.href='@{/member/login}'|">Login</button>
-          <button type="button" class="btn btn-outline-danger me-2" sec:authorize="isAuthenticated()" th:onclick="|location.href='@{/member/logout}'|">Logout</button>
-          <button type="button" class="btn btn-primary me-2" sec:authorize="isAnonymous()" th:onclick="|location.href='@{/member/register}'|">Sign-up</button>
-        </div>
-      </header>
+      </div>
+    </nav>
+  </header>
 </body>
+
 </html>
