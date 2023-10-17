@@ -10,6 +10,23 @@
             if (errorMessage != null) {
                 alert(errorMessage);
             }
+
+             // Quill 에디터 설정
+             const options = {
+                modules: {
+                    toolbar: [
+                        [{ header: [1, 2, false] }],
+                        ['bold', 'italic', 'underline'],
+                        ['image', 'video', 'code-block']
+                    ]
+                },
+                placeholder: '여기부터 작성해주세요...',
+                theme: 'snow'
+            };
+            const editor = new Quill('#editor', options);
+            editor.on('text-change', () => {
+                document.getElementById("content").value = editor.root.innerHTML;
+            });
         });
     </script>
 
@@ -27,7 +44,7 @@
         <div class="m-5 pb-3">
             <form id="boardForm" th:action="@{/board/update/{id}(id=${boardUpdateDto.id})}" role="form" method="post"
                 th:object="${boardUpdateDto}">
-                <input type="hidden" class="d-block" th:text="${boardUpdateDto.id}">
+                <input type="hidden" class="d-block" th:value="${boardUpdateDto.id}">
                 <div class="mx-5 mb-4">
                     <label th:for="title" class="form-label fs-2">제목</label>
                     <input title="글제목" type="text" th:field="*{title}" name="title" id="title" class="form-control ">
@@ -35,7 +52,10 @@
 
                 <div class="mx-5 mb-3">
                     <label th:for="content" class="form-label fs-2">내용</label>
-                    <textarea class="content form-control" th:field="*{content}" th:text="${boardUpdateDto.content}" name="content" rows="30" cols="50"></textarea>
+                    <input type="hidden" th:field="*{content}" id="content">
+                    <div id="editor" th:field="*{content}" th:utext="${boardUpdateDto.content}" name="content">
+
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-success mx-5">수정</button>
