@@ -1,6 +1,8 @@
 package com.milk.milkweb.controller;
 
 import com.milk.milkweb.dto.*;
+import com.milk.milkweb.entity.BoardImg;
+import com.milk.milkweb.service.BoardImgService;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @RequestMapping(value = "/board")
 @Controller
@@ -24,6 +28,7 @@ public class BoardController {
 
 	private final BoardService boardService;
 	private final BoardLikeService boardLikeService;
+	private final BoardImgService boardImgService;
 
 	@GetMapping(value = "/write")
 	public String entryWriteBoardForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
@@ -132,4 +137,15 @@ public class BoardController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
+
+	@PostMapping(value = "/uploadImg")
+	public @ResponseBody ResponseEntity postImg(@RequestPart(value = "img") MultipartFile multipartFile) {
+		try {
+		 	BoardImg boardImg = boardImgService.uploadImg(multipartFile);
+			return new ResponseEntity<>(boardImg, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }

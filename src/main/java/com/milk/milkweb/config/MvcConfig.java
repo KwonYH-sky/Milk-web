@@ -1,5 +1,6 @@
 package com.milk.milkweb.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
@@ -13,6 +14,8 @@ import java.util.List;
 @Configuration
 public class MvcConfig extends WebMvcConfigurationSupport {
 
+	@Value("${uploadPath}")
+	String uploadPath;
 	@Bean
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new HiddenHttpMethodFilter();
@@ -22,6 +25,7 @@ public class MvcConfig extends WebMvcConfigurationSupport {
 	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
 		registry.addResourceHandler("/swagger-ui/**").addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/5.2.0/");
+		registry.addResourceHandler("/board/images/**").addResourceLocations(uploadPath);
 		super.addResourceHandlers(registry);
 	}
 

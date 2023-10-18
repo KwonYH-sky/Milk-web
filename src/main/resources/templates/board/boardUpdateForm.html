@@ -6,19 +6,20 @@
 
     <script th:inline="javascript">
         $(document).ready(() => {
-            const errorMessage = [[${errorMessage}]];
+            const errorMessage = [[${ errorMessage }]];
             if (errorMessage != null) {
                 alert(errorMessage);
             }
-
-             // Quill 에디터 설정
-             const options = {
+            // Quill 에디터 설정
+            const options = {
                 modules: {
-                    toolbar: [
-                        [{ header: [1, 2, false] }],
-                        ['bold', 'italic', 'underline'],
-                        ['image', 'video', 'code-block']
-                    ]
+                    toolbar: {
+                        container: [
+                            [{ header: [1, 2, false] }],
+                            ['bold', 'italic', 'underline'],
+                            ['image', 'video', 'code-block']
+                        ]
+                    },
                 },
                 placeholder: '여기부터 작성해주세요...',
                 theme: 'snow'
@@ -27,7 +28,48 @@
             editor.on('text-change', () => {
                 document.getElementById("content").value = editor.root.innerHTML;
             });
+            editor.getModule('toolbar').addHandler('image', function () {
+                imageHandler(editor);
+            });
         });
+
+        const imageHandler = (quill) => {
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const token = $("meta[name='_csrf']").attr("content");
+
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.addEventListener('change', async () => {
+                const formData = new FormData();
+                const file = input.files[0];
+
+                formData.append("img", file);
+
+                try {
+                    const result = await axios.post("/board/uploadImg", formData,
+                        {
+                            headers: {
+                                "Content-Type": "multipart/form-data; charset=utf-8",
+                                [header]: token,
+                            },
+                        }
+                    );
+                    console.log(result);
+                    console.log(quill);
+                    const IMG_URL = result.data.imgUrl;
+
+                    const range = quill.getSelection();
+
+                    quill.insertEmbed(range.index, 'image', IMG_URL);
+
+                } catch (err) {
+                    console.log(err);
+                };
+            });
+        };
     </script>
 
 </th:block>
@@ -36,6 +78,8 @@
 <head>
     <meta charset="UTF-8">
     <title>수정</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 
 <body>
