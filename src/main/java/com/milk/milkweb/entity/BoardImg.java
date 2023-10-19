@@ -1,14 +1,18 @@
 package com.milk.milkweb.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "board_img")
 @Getter @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BoardImg {
 
 	@Id
@@ -19,8 +23,6 @@ public class BoardImg {
 	private String imgName;
 
 	private String imgOriName;
-
-	private String imgUrl;
 
 	private String path;
 

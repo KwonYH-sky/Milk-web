@@ -1,6 +1,8 @@
 package com.milk.milkweb.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +37,16 @@ public class FileService {
 		multipartFile.transferTo(new File(uploadLocation, savedFileName));
 
 		return savedFileName;
+	}
+
+	public Resource downloadFile(String downloadLocation, String path, String fileName) {
+		Resource resource = new FileSystemResource(downloadLocation + "\\" + path + "\\" + fileName);
+		log.debug("FIleService downloadFile() resource " + resource.toString());
+		if (!resource.exists()){
+			log.error("FileService downloadFile() resource is not exists.");
+			throw new RuntimeException();
+		}
+		return resource;
 	}
 
 }

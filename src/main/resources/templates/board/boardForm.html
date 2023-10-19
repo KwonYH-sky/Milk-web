@@ -59,11 +59,11 @@
                     );
                     console.log(result);
                     console.log(quill);
-                    const IMG_URL = result.data.imgUrl;
+                    const imgName = result.data.imgName;
 
                     const range = quill.getSelection();
 
-                    quill.insertEmbed(range.index, 'image', IMG_URL);
+                    quill.insertEmbed(range.index, 'image', '/board/images?imgName=' + imgName);
 
                 } catch (err) {
                     console.log(err);

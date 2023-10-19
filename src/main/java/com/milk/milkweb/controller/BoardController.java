@@ -141,11 +141,24 @@ public class BoardController {
 	@PostMapping(value = "/uploadImg")
 	public @ResponseBody ResponseEntity postImg(@RequestPart(value = "img") MultipartFile multipartFile) {
 		try {
-		 	BoardImg boardImg = boardImgService.uploadImg(multipartFile);
+		 	BoardImgUploadDto boardImg = boardImgService.uploadImg(multipartFile);
 			return new ResponseEntity<>(boardImg, HttpStatus.OK);
 		} catch (Exception e) {
+			log.error("BoardController postImg() Exception : " + e.getMessage());
 			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 	}
 
+	@GetMapping(value = "/images")
+	public @ResponseBody ResponseEntity getImg(@RequestParam(value = "imgName") String imgName) {
+		log.debug("BoardController getImg() : imgName : " + imgName);
+		try {
+			BoardImgDownloadDto dto = boardImgService.downloadImg(imgName);
+			log.debug("BoardController getImg() dto : " + dto.toString());
+			return new ResponseEntity<>(dto.getResource(), dto.getHeader(), HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("BoardController getImg() Exception : " + e.getMessage());
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
 }
