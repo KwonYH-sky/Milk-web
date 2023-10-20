@@ -19,6 +19,74 @@
 
 </th:block>
 
+<th:block layout:fragment="script">
+
+  <script th:inline="javascript">
+    $(document).ready(() => {
+      const key = getCookie('key');
+      $('#email').val(key);
+
+      if ($("#email").val() != ''){
+        $('#remember_me').attr("checked", true);
+      }
+
+      $("#remember_me").change(() => {
+        if($('#remember_me').is(':checked')) {
+          setCookie('key', $('#email').val);
+        } else {
+          deleteCookie('key');
+        }
+      });
+
+      $('#email').keyup(() => {
+        if($('#remember_me').is(':checked')) {
+          setCookie('key', $('#email').val);
+        }
+      });
+      
+    });
+
+    function getCookie(name) {
+      let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+      ));
+      return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    function setCookie(name, value, options = {}) {
+
+      options = {
+        path: '/',
+        expires: 'max-age=604800'
+      };
+
+      if (options.expires instanceof Date) {
+        options.expires = options.expires.toUTCString();
+      }
+
+      let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+      for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+        let optionValue = options[optionKey];
+        if (optionValue !== true) {
+          updatedCookie += "=" + optionValue;
+        }
+      }
+
+      document.cookie = updatedCookie;
+    }
+
+    function deleteCookie(name) {
+      setCookie(name, "", {
+        'max-age': -1
+      })
+    }
+
+  </script>
+
+</th:block>
+
 <head>
   <meta charset="UTF-8">
   <title>로그인</title>
@@ -74,14 +142,14 @@
                   <p th:if="${loginErrorMsg}" class="error" th:text="${loginErrorMsg}"></p>
                 </div>
 
-                <!-- <div class="col-12">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="" name="remember_me" id="remember_me">
-                      <label class="form-check-label text-secondary" for="remember_me">
-                        아이디 기억하기
-                      </label>
-                    </div>
-                  </div> -->
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" name="remember_me" id="remember_me">
+                    <label class="form-check-label text-secondary" for="remember_me">
+                      이메일 기억하기
+                    </label>
+                  </div>
+                </div>
 
                 <div class="col-12">
                   <div class="d-grid">
@@ -102,7 +170,7 @@
                 </div>
               </div>
             </div>
-              <a href="/oauth2/authorization/google" role="button" class="btn btn-outline-danger bi bi-google">로그인</a>
+            <a href="/oauth2/authorization/google" role="button" class="btn btn-outline-danger bi bi-google">로그인</a>
           </div>
         </div>
       </div>
