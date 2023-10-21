@@ -42,6 +42,11 @@ public class Member {
 				.build();
 	}
 
+	public void updatePassword(String newPwd, PasswordEncoder passwordEncoder) {
+		String PwdEncoding = passwordEncoder.encode(newPwd);
+		this.password = PwdEncoding;
+	}
+
 	public String getRoleKey(){
 		return this.role.getKey();
 	}

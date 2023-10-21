@@ -4,10 +4,12 @@ import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.exception.AlreadyRegisterException;
 import com.milk.milkweb.repository.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +27,16 @@ public class MemberService implements UserDetailsService {
 		return memberRepository.save(member);
 	}
 
-	public void validateDuplicateMember(Member member)  {
+	public void validateDuplicateMember(Member member) {
 		Member findMember = memberRepository.findByEmail(member.getEmail());
 		if (findMember != null) {
 			throw new AlreadyRegisterException("이미 가입된 이메일입니다.");
 		}
+	}
+
+	public void updatePassword(String email, String newPwd, PasswordEncoder passwordEncoder) {
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
+		member.updatePassword(newPwd, passwordEncoder);
 	}
 
 	@Override
