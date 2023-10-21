@@ -32,7 +32,7 @@
 
       $("#remember_me").change(() => {
         if($('#remember_me').is(':checked')) {
-          setCookie('key', $('#email').val);
+          setCookie('key', $('#email').val());
         } else {
           deleteCookie('key');
         }
@@ -40,7 +40,7 @@
 
       $('#email').keyup(() => {
         if($('#remember_me').is(':checked')) {
-          setCookie('key', $('#email').val);
+          setCookie('key', $('#email').val());
         }
       });
       
@@ -166,7 +166,7 @@
                 <hr class="mt-5 mb-4 border-secondary-subtle">
                 <div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end">
                   <a href="/member/register" class="link-secondary text-decoration-none">회원가입</a>
-                  <!-- <a href="#" class="link-secondary text-decoration-none">비밀번호 찾기</a> -->
+                  <a href="#" class="link-secondary text-decoration-none">비밀번호 찾기</a>
                 </div>
               </div>
             </div>
