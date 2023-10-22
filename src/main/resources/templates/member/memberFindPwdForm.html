@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/memberLayout}">
+
+<th:block layout:fragment="css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        $(document).ready(() => {
+            const errorMessage = [[${ errorMessage }]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+
+            document.getElementById('findPwdBth').addEventListener('click', sendMail)
+        });
+
+        const sendMail = async () => {
+            const header = $("meta[name='_csrf_header']").attr("content");
+            const token = $("meta[name='_csrf']").attr("content");
+
+            const url = '/member/findPwd/sendMail';
+            const data = {
+                'email': document.getElementById('email').value
+            };
+
+            try {
+                const res = await axios.post(url, data, {
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        [header]: token,
+                    },
+                });
+                console.log('data :>> ', data);
+                console.log('res :>> ', res);
+                alert(`${data.email}로 메일를 보냈습니다.\n확인해주세요.`)
+                location.href='/';
+            } catch (err) {
+                console.log('err :>> ', err);
+                alert("에러가 발생했습니다. 잠시 후 다시 시도해주세요.")
+            }
+        };
+    </script>
+
+</th:block>
+
+
+<head>
+    <meta charset="UTF-8" />
+    <title>비밀번호 찾기</title>
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+
+<body class="bg-light">
+
+    <div layout:fragment="content" style="height: 100%;" class="py-3 py-md-5 py-xl-8">
+
+        <div class="py-3 py-md-5 py-xl-8">
+            <div class="container mt-5">
+                <div class="row justify-content-md-center">
+                    <div class="col-12 col-md-11 col-lg-8 col-xl-7 col-xxl-6">
+                        <div class="bg-white p-4 p-md-5 rounded shadow-sm">
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <p class="fs-2"><a class="text-decoration-none" href="/">Milk WEB</a> 비밀번호 찾기
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row gy-3 gy-md-4 overflow-hidden">
+                                <div class="col-12">
+
+                                    <label for="email" class="form-label">이메일</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                                            </svg>
+                                        </span>
+                                        <input type="email" class="form-control" name="email" id="email" required>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="col-12">
+                        <label for="name" class="form-label">이름</label>
+                        <div class="input-group">
+                          <span class="input-group-text">@</span>
+                          <input type="text" class="form-control" name="name" id="name" required>
+                        </div>
+                      </div> -->
+
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn bsb-btn-xl btn-primary" type="button" id="findPwdBth">비밀번호
+                                            찾기</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+</html>

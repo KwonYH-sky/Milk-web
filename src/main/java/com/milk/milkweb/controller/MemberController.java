@@ -1,6 +1,7 @@
 package com.milk.milkweb.controller;
 
 import com.milk.milkweb.dto.MailDto;
+import com.milk.milkweb.dto.MailPwdSendDto;
 import com.milk.milkweb.dto.MemberFormDto;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.service.EmailService;
@@ -14,9 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping(value = "/member")
 @Controller
@@ -62,16 +61,20 @@ public class MemberController {
 	}
 
 	@PostMapping(value = "/findPwd/sendMail")
-	public ResponseEntity<?> sendTempPwdMail(String email) {
+	public ResponseEntity<?> sendTempPwdMail(@RequestBody MailPwdSendDto mailPwdSendDto) {
 		String tempPwd = emailService.getTempPassword();
 		try {
-			MailDto mailDto = MailDto.toTempPwdMailDto(email, tempPwd);
+			memberService.updatePassword(mailPwdSendDto.getEmail(), tempPwd, passwordEncoder);
+			MailDto mailDto = MailDto.toTempPwdMailDto(mailPwdSendDto.getEmail(), tempPwd);
 			emailService.sendMail(mailDto);
-			memberService.updatePassword(email, tempPwd, passwordEncoder);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("MemberController sendTempPwdMail() error: " + e.getMessage());
 			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
+	}
+	@GetMapping(value = "/findPwd")
+	public String findPwd(){
+		return "member/memberFindPwdForm";
 	}
 }

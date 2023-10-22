@@ -17,6 +17,7 @@ public class EmailService {
 	private final JavaMailSender javaMailSender;
 
 	public void sendMail(MailDto mailDto) {
+		log.info("EmailService sendMail()");
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 		mailMessage.setTo(mailDto.getAddress());
 		mailMessage.setSubject(mailDto.getTitle());
