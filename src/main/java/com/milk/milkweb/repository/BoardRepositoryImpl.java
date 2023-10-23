@@ -3,6 +3,7 @@ package com.milk.milkweb.repository;
 import com.milk.milkweb.dto.BoardListDto;
 import com.milk.milkweb.dto.BoardSearchDto;
 import com.milk.milkweb.dto.QBoardListDto;
+import com.milk.milkweb.entity.Board;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.milk.milkweb.entity.QBoard.board;
@@ -58,5 +60,29 @@ public class BoardRepositoryImpl implements BoardCustomRepository{
 				.fetchOne();
 
 		return new PageImpl<>(contents, pageable, count);
+	}
+
+	@Override
+	public List<Board> findDailyBest() {
+		return queryFactory
+				.selectFrom(board)
+				.where(
+						board.createdTime.between(LocalDateTime.now().minusDays(1), LocalDateTime.now()),
+						board.likes.size().goe(3))
+				.orderBy(board.likes.size().desc())
+				.limit(5)
+				.fetch();
+	}
+
+	@Override
+	public List<Board> findWeeklyBest() {
+		return queryFactory
+				.selectFrom(board)
+				.where(
+						board.likes.size().goe(3),
+						board.createdTime.between(LocalDateTime.now().minusDays(7), LocalDateTime.now()))
+				.orderBy(board.likes.size().desc())
+				.limit(5)
+				.fetch();
 	}
 }

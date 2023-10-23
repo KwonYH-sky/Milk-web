@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping(value = "/")
 @Controller
@@ -19,8 +21,11 @@ public class MainController {
 
 	@GetMapping
 	public String getMain(Model model) {
-		List<MainBoardDto> boardList = boardService.getMainBoard();
-		model.addAttribute("boards", boardList);
+		Map<String, List<MainBoardDto>> lists = new HashMap<>();
+		lists.put("boards", boardService.getMainBoard());
+		lists.put("dailyBest", boardService.getDailyBest());
+		lists.put("weeklyBest", boardService.getWeelyBest());
+		model.addAllAttributes(lists);
 		return "index";
 	}
 }

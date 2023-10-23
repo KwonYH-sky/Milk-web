@@ -122,13 +122,19 @@ public class BoardService {
 	@Transactional(readOnly = true)
 	public List<MainBoardDto> getMainBoard() {
 		List<Board> boards = boardRepository.findMainBoards();
-
-		List<MainBoardDto> mainBoardList = boards.stream().map(board -> MainBoardDto.builder()
-				.id(board.getId())
-				.title(board.getTitle())
-				.build()).toList();
-
+		List<MainBoardDto> mainBoardList = boards.stream().map(board -> MainBoardDto.of(board)).toList();
 		return mainBoardList;
 	}
 
+	@Transactional(readOnly = true)
+	public List<MainBoardDto> getDailyBest() {
+		List<Board> boards = boardRepository.findDailyBest();
+		return boards.stream().map(board -> MainBoardDto.of(board)).toList();
+	}
+
+	@Transactional(readOnly = true)
+	public List<MainBoardDto> getWeelyBest() {
+		List<Board> boards = boardRepository.findWeeklyBest();
+		return boards.stream().map(board -> MainBoardDto.of(board)).toList();
+	}
 }
