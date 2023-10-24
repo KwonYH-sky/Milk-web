@@ -24,14 +24,36 @@ public class MemberService implements UserDetailsService {
 
 	public Member saveMember(Member member) {
 		validateDuplicateMember(member);
+		if (validateDuplicateName(member.getName())) {
+			throw new AlreadyRegisterException("이미 등록된 이름입니다.");
+		}
 		return memberRepository.save(member);
 	}
 
+	@Transactional(readOnly = true)
 	public void validateDuplicateMember(Member member) {
 		Member findMember = memberRepository.findByEmail(member.getEmail());
 		if (findMember != null) {
 			throw new AlreadyRegisterException("이미 가입된 이메일입니다.");
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public boolean validateDuplicateName(String name) {
+		return memberRepository.existsByName(name);
+	}
+
+	public boolean validatePassword(CustomUserDetails userDetails, String password) {
+		return userDetails.getPassword().equals(password);
+	}
+
+
+	public void updateName(String email, String newName) {
+		if (validateDuplicateName(newName)) {
+			throw new AlreadyRegisterException("이미 등록된 이름입니다.");
+		}
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
+		member.updateName(newName);
 	}
 
 	public void updatePassword(String email, String newPwd, PasswordEncoder passwordEncoder) {

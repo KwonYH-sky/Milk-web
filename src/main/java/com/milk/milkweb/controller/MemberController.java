@@ -1,5 +1,6 @@
 package com.milk.milkweb.controller;
 
+import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.dto.MailDto;
 import com.milk.milkweb.dto.MailPwdSendDto;
 import com.milk.milkweb.dto.MemberFormDto;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +38,7 @@ public class MemberController {
 
 	@PostMapping(value = "/register")
 	public String registerMember(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model) {
-		if(bindingResult.hasErrors()) return "member/memberForm";
+		if (bindingResult.hasErrors()) return "member/memberForm";
 
 		try {
 			Member member = Member.createMember(memberFormDto, passwordEncoder);
@@ -60,6 +62,11 @@ public class MemberController {
 		return "member/memberLoginForm";
 	}
 
+	@GetMapping(value = "/findPwd")
+	public String findPwd() {
+		return "member/memberFindPwdForm";
+	}
+
 	@PostMapping(value = "/findPwd/sendMail")
 	public ResponseEntity<?> sendTempPwdMail(@RequestBody MailPwdSendDto mailPwdSendDto) {
 		String tempPwd = emailService.getTempPassword();
@@ -73,8 +80,38 @@ public class MemberController {
 			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@GetMapping(value = "/findPwd")
-	public String findPwd(){
-		return "member/memberFindPwdForm";
+
+	@GetMapping(value = "/myPage")
+	public String toMyPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		return "member/memberMyPage";
+	}
+
+	@PostMapping
+	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, String newName) {
+		try {
+			memberService.updateName(userDetails.getName(), newName);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("MemberController changeName() error : " + e.getMessage());
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PostMapping
+	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String password) {
+		if (memberService.validatePassword(userDetails, passwordEncoder.encode(password))){
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+	}
+
+	@PostMapping
+	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String newPwd) {
+		try {
+			memberService.updatePassword(userDetails.getName(), newPwd, passwordEncoder);
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("MemberController changePwd() error : " + e.getMessage());
+			return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+		}
 	}
 }

@@ -22,6 +22,7 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	@Column(unique = true)
 	private String name;
 
 	@Column(unique = true)
@@ -40,6 +41,9 @@ public class Member {
 				.password(password)
 				.role(Role.USER)
 				.build();
+	}
+	public void updateName(String newName) {
+		name = newName;
 	}
 
 	public void updatePassword(String newPwd, PasswordEncoder passwordEncoder) {
