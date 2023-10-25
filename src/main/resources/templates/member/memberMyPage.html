@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+        $(document).ready(() => {
+            const errorMessage = [[${ errorMessage }]];
+            if (errorMessage != null) {
+                alert(errorMessage);
+            }
+            const memberName = document.getElementById('memberName').value;
+            document.getElementById('changeNameBtn').addEventListener('click', () => changeName(memberName));
+
+            document.getElementById('changePwdBtn').click = '';
+        });
+
+        async function changeName(memberName) {
+            const newName = $('#memberName').val();
+            if (newName === memberName) {
+                alert("현재 이름과 동일합니다.")
+                return;
+            }
+            const header = document.querySelector("meta[name='_csrf_header']").content;
+            const token = document.querySelector("meta[name='_csrf']").content;
+            const url = '/member/mypage/change-name';
+            const data = {
+                'name' : newName
+            };
+
+            try {
+                const res = await axios.post(url, data, {
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        [header]: token,
+                    },
+                });
+                console.log(res)
+
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+
+</th:block>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>MyPage</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="p-5">
+            <h1 class="dispaly">⚙계정 설정</h1>
+        </div>
+
+        <div class="px-5 py-2">
+            <div class="fs-2">비밀번호 변경</div>
+            <button class="btn btn-danger mt-2" type="button" id="changePwdBtn">비밀번호 변경</button>
+        </div>
+
+        <div class="px-5 py-2">
+            <div class="fs-2">이름 변경</div>
+            <div class="input-group my-2">
+                <input type="text" th:text="${}" class="form-control" id="memberName" style="max-width: 300px;">
+                <button class="btn btn-outline-primary" type="button" id="changeNameBtn">변경</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>

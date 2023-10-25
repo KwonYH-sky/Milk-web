@@ -81,12 +81,13 @@ public class MemberController {
 		}
 	}
 
-	@GetMapping(value = "/myPage")
-	public String toMyPage(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	@GetMapping(value = "/mypage")
+	public String toMyPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+		model.addAttribute("MemberName", userDetails.getUsername());
 		return "member/memberMyPage";
 	}
 
-	@PostMapping
+	@PostMapping("/mypage/change-name")
 	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, String newName) {
 		try {
 			memberService.updateName(userDetails.getName(), newName);
@@ -97,14 +98,19 @@ public class MemberController {
 		}
 	}
 
-	@PostMapping
+	@GetMapping("/mypage/modify-info")
+	public String toModifyPwd() {
+		return "member/memberModifyPwd";
+	}
+
+	@PostMapping("/mypage/validate-pwd")
 	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String password) {
 		if (memberService.validatePassword(userDetails, passwordEncoder.encode(password))){
 			return new ResponseEntity<>(HttpStatus.OK);
-		} else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 
-	@PostMapping
+	@PostMapping("/mypage/modify-info")
 	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String newPwd) {
 		try {
 			memberService.updatePassword(userDetails.getName(), newPwd, passwordEncoder);
