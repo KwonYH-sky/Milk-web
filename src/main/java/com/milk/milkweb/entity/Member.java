@@ -51,6 +51,10 @@ public class Member {
 		this.password = PwdEncoding;
 	}
 
+	public void toUSER() {
+		role = Role.USER;
+	}
+
 	public String getRoleKey(){
 		return this.role.getKey();
 	}

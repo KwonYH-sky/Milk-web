@@ -1,5 +1,6 @@
 package com.milk.milkweb.service;
 
+import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.exception.AlreadyRegisterException;
@@ -43,8 +44,9 @@ public class MemberService implements UserDetailsService {
 		return memberRepository.existsByName(name);
 	}
 
-	public boolean validatePassword(CustomUserDetails userDetails, String password) {
-		return userDetails.getPassword().equals(password);
+	public boolean validatePassword(CustomUserDetails userDetails, String password, PasswordEncoder passwordEncoder) {
+
+		return passwordEncoder.matches(password, userDetails.getPassword());
 	}
 
 
@@ -58,6 +60,8 @@ public class MemberService implements UserDetailsService {
 
 	public void updatePassword(String email, String newPwd, PasswordEncoder passwordEncoder) {
 		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
+		if (member.getRoleKey().equals(Role.SOCIAL))
+			member.toUSER();
 		member.updatePassword(newPwd, passwordEncoder);
 	}
 

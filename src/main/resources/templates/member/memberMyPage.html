@@ -6,14 +6,10 @@
 
     <script th:inline="javascript">
         $(document).ready(() => {
-            const errorMessage = [[${ errorMessage }]];
-            if (errorMessage != null) {
-                alert(errorMessage);
-            }
             const memberName = document.getElementById('memberName').value;
             document.getElementById('changeNameBtn').addEventListener('click', () => changeName(memberName));
 
-            document.getElementById('changePwdBtn').click = '';
+            document.getElementById('changePwdBtn').onclick = () => location.href = '/member/mypage/modify-info';
         });
 
         async function changeName(memberName) {
@@ -26,7 +22,7 @@
             const token = document.querySelector("meta[name='_csrf']").content;
             const url = '/member/mypage/change-name';
             const data = {
-                'name' : newName
+                'name': newName
             };
 
             try {
@@ -37,10 +33,27 @@
                     },
                 });
                 console.log(res)
-
+                alert('이름이 성공적으로 바뀌었습니다.');
+                location.href = '/';
 
             } catch (err) {
                 console.error(err);
+                if (err.response) {
+                    // 요청이 전송되었고, 서버는 2xx 외의 상태 코드로 응답했습니다.
+                    console.log(err.response.data);
+                    console.log(err.response.status);
+                    console.log(err.response.headers);
+                    
+                    alert(err.response.data.message);
+
+                } else if (err.request) {
+                    // 요청이 전송되었지만, 응답이 수신되지 않았습니다.
+                    // 'err.request'는 브라우저에서 XMLHtpRequest 인스턴스 입니다.
+                    console.log(err.request);
+                } else {
+                    // 오류가 발생한 요청을 설정하는 동안 문제가 발생했습니다.
+                    console.log("Error", err.message);
+                }
             }
         }
     </script>
@@ -69,7 +82,8 @@
         <div class="px-5 py-2">
             <div class="fs-2">이름 변경</div>
             <div class="input-group my-2">
-                <input type="text" th:text="${}" class="form-control" id="memberName" style="max-width: 300px;">
+                <input type="text" th:value="${MemberName}" class="form-control" id="memberName"
+                    style="max-width: 300px;">
                 <button class="btn btn-outline-primary" type="button" id="changeNameBtn">변경</button>
             </div>
 

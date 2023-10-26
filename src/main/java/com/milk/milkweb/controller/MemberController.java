@@ -1,9 +1,7 @@
 package com.milk.milkweb.controller;
 
-import com.milk.milkweb.dto.CustomUserDetails;
-import com.milk.milkweb.dto.MailDto;
-import com.milk.milkweb.dto.MailPwdSendDto;
-import com.milk.milkweb.dto.MemberFormDto;
+import com.milk.milkweb.constant.Role;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.service.EmailService;
 import com.milk.milkweb.service.MemberService;
@@ -88,9 +86,9 @@ public class MemberController {
 	}
 
 	@PostMapping("/mypage/change-name")
-	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, String newName) {
+	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
 		try {
-			memberService.updateName(userDetails.getName(), newName);
+			memberService.updateName(userDetails.getName(), myPageDto.getName());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("MemberController changeName() error : " + e.getMessage());
@@ -99,21 +97,24 @@ public class MemberController {
 	}
 
 	@GetMapping("/mypage/modify-info")
-	public String toModifyPwd() {
+	public String toModifyPwd(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+		model.addAttribute("isSocial", userDetails.getAuthorities().contains(Role.SOCIAL));
 		return "member/memberModifyPwd";
 	}
 
 	@PostMapping("/mypage/validate-pwd")
-	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String password) {
-		if (memberService.validatePassword(userDetails, passwordEncoder.encode(password))){
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
+		if (memberService.validatePassword(userDetails, myPageDto.getPassword(), passwordEncoder)){
+			return ResponseEntity.ok().build();
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 	}
 
 	@PostMapping("/mypage/modify-info")
-	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, String newPwd) {
+	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
 		try {
-			memberService.updatePassword(userDetails.getName(), newPwd, passwordEncoder);
+			memberService.updatePassword(userDetails.getName(), myPageDto.getPassword(), passwordEncoder);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("MemberController changePwd() error : " + e.getMessage());
