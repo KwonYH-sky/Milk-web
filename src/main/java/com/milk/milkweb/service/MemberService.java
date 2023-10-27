@@ -60,7 +60,7 @@ public class MemberService implements UserDetailsService {
 
 	public void updatePassword(String email, String newPwd, PasswordEncoder passwordEncoder) {
 		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
-		if (member.getRoleKey().equals(Role.SOCIAL))
+		if (member.getRoleKey().equals(Role.SOCIAL.getKey()))
 			member.toUSER();
 		member.updatePassword(newPwd, passwordEncoder);
 	}

@@ -86,9 +86,9 @@ public class MemberController {
 	}
 
 	@PostMapping("/mypage/change-name")
-	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
+	public ResponseEntity<?> changeName(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody @Valid MyPageNameDto myPageNameDto) {
 		try {
-			memberService.updateName(userDetails.getName(), myPageDto.getName());
+			memberService.updateName(userDetails.getName(), myPageNameDto.getName());
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("MemberController changeName() error : " + e.getMessage());
@@ -98,13 +98,14 @@ public class MemberController {
 
 	@GetMapping("/mypage/modify-info")
 	public String toModifyPwd(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-		model.addAttribute("isSocial", userDetails.getAuthorities().contains(Role.SOCIAL));
+		model.addAttribute("isSocial", userDetails.getAuthorities().stream()
+				.anyMatch(authority -> authority.getAuthority().equals(Role.SOCIAL.getKey())));
 		return "member/memberModifyPwd";
 	}
 
 	@PostMapping("/mypage/validate-pwd")
-	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
-		if (memberService.validatePassword(userDetails, myPageDto.getPassword(), passwordEncoder)){
+	public ResponseEntity<?> validatePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPagePasswordDto myPagePasswordDto) {
+		if (memberService.validatePassword(userDetails, myPagePasswordDto.getPassword(), passwordEncoder)){
 			return ResponseEntity.ok().build();
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -112,9 +113,9 @@ public class MemberController {
 	}
 
 	@PostMapping("/mypage/modify-info")
-	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody MyPageDto myPageDto) {
+	public ResponseEntity<?> changePwd(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody @Valid MyPagePasswordDto myPagePasswordDto) {
 		try {
-			memberService.updatePassword(userDetails.getName(), myPageDto.getPassword(), passwordEncoder);
+			memberService.updatePassword(userDetails.getName(), myPagePasswordDto.getPassword(), passwordEncoder);
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("MemberController changePwd() error : " + e.getMessage());

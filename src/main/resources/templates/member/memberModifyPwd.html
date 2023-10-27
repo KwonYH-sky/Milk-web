@@ -6,7 +6,9 @@
 
     <script th:inline="javascript">
         window.onload = () => {
-            const isSocial = [[${'isSocial'}]];
+            const isSocial = [[${ isSocial }]];
+
+            // 소셜 회원이면 바로 비밀번호 페이지로
             if (isSocial) {
                 document.getElementById('form').innerHTML = `
                 <div class="fs-2 mb-2">비밀번호 변경</div>
@@ -26,6 +28,10 @@
 
         async function confirmPwd() {
             const password = document.getElementById('password').value;
+            if (!password) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
 
             const header = document.querySelector("meta[name='_csrf_header']").content;
             const token = document.querySelector("meta[name='_csrf']").content;
@@ -60,12 +66,24 @@
                     alert("비밀번호가 일치하지 않습니다.");
                 }
 
+                if (err.response.data.errors) {
+                    let errMessage = '';
+                    err.response.data.errors.map(e => errMessage += e.defaultMessage + '\n');
+                    alert(errMessage);
+                }
+
+
             }
         }
 
         async function changePwd() {
             const newPwd = document.getElementById('newPassword').value;
             const confirmPwd = document.getElementById('confirmPwd').value;
+
+            if (!newPwd) {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
 
             if (newPwd !== confirmPwd) {
                 alert("비밀번호 확인과 일치하지 않습니다.");
@@ -94,7 +112,12 @@
 
             } catch (err) {
                 console.error(err);
-                alert("오류가 발생 했습니다. 잠시후 다시 시도해주세요.");
+                if (err.response.data.errors) {
+                    let errMessage = '';
+                    err.response.data.errors.map(e => errMessage += e.defaultMessage + '\n');
+                    alert(errMessage);
+                } else
+                    alert("오류가 발생 했습니다. 잠시후 다시 시도해주세요.");
             }
 
         }
