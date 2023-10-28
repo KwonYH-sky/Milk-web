@@ -1,5 +1,6 @@
 package com.milk.milkweb.service;
 
+import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.CommentFormDto;
 import com.milk.milkweb.dto.CommentListDto;
 import com.milk.milkweb.dto.CommentUpdateDto;
@@ -55,7 +56,7 @@ public class CommentService {
 				.id(comment.getId())
 				.memberName(comment.getMember().getName())
 				.comment(comment.getComment())
-				.isUserCommentAuthor(member.equals(comment.getMember()))
+				.isUserCommentAuthor(member.equals(comment.getMember()) || member.getRoleKey().equals(Role.ADMIN.getKey()))
 				.build());
 
 		return commentListDtos;
@@ -75,7 +76,7 @@ public class CommentService {
 		Comment comment = commentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		Member member = Optional.of(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 
-		if (!member.equals(comment.getMember())) {
+		if (!member.equals(comment.getMember()) && !member.getRoleKey().equals(Role.ADMIN.getKey())) {
 			throw new MemberValidationException("수정 & 삭제 권한이 없습니다.");
 		}
 

@@ -1,7 +1,8 @@
 package com.milk.milkweb.controller;
 
+import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.*;
-import com.milk.milkweb.entity.BoardImg;
+import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.service.BoardImgService;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
@@ -18,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Optional;
 
 
 @RequestMapping(value = "/board")
@@ -71,9 +74,10 @@ public class BoardController {
 	}
 
 	@GetMapping(value = "/{id}")
-	public String boardDetail(@PathVariable Long id, Model model) {
+	public String boardDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+		Member member = Optional.ofNullable(principal).map(CustomUserDetails::getMember).orElse(Member.builder().role(Role.USER).build());
 		try {
-			BoardDetailDto detail = boardService.getDetail(id);
+			BoardDetailDto detail = boardService.getDetail(id, member);
 			model.addAttribute("boardDetail", detail);
 		} catch (Exception e) {
 			model.addAttribute("errorMessage", "게시물이 존재하지 않습니다.");
@@ -89,7 +93,7 @@ public class BoardController {
 			BoardUpdateDto boardUpdateDto = boardService.getUpdateForm(id, principal.getName());
 			model.addAttribute("boardUpdateDto", boardUpdateDto);
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", e.getMessage());
+			model.addAttribute("errorMessage", "권한이 없습니다.");
 			return "redirect:/board/{id}";
 		}
 		return "/board/boardUpdateForm";
@@ -114,8 +118,8 @@ public class BoardController {
 		try {
 			boardService.deleteBoard(id, principal.getName());
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			return "redirect:";
+			model.addAttribute("errorMessage", "권한이 없습니다.");
+			return "redirect:/board/" + id;
 		}
 		return "redirect:/board/list";
 	}

@@ -1,6 +1,7 @@
 package com.milk.milkweb.service;
 
 
+import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
@@ -67,9 +68,8 @@ public class BoardService {
 
 
 	@Transactional
-	public BoardDetailDto getDetail(Long id) {
+	public BoardDetailDto getDetail(Long id, Member member) {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-
 		board.increaseView();
 
 		BoardDetailDto boardDetailDto = BoardDetailDto.builder()
@@ -81,6 +81,7 @@ public class BoardService {
 				.updatedTime(board.getUpdatedTime())
 				.view(board.getViews())
 				.likes(board.getLikes().size())
+				.isAuthorized(board.getMember().getId().equals(member.getId()) || member.getRoleKey().equals(Role.ADMIN.getKey()))
 				.build();
 
 		return boardDetailDto;
@@ -112,7 +113,7 @@ public class BoardService {
 	public Board validateMemberBoard(Long id, String email) {
 		Member member = memberRepository.findByEmail(email);
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-		if (member != board.getMember()) {
+		if (member != board.getMember() && !(member.getRoleKey().equals(Role.ADMIN.getKey()))) {
 			throw new MemberValidationException("권한이 없습니다.");
 		}
 

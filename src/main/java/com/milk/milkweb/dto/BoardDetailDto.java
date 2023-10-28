@@ -25,5 +25,5 @@ public class BoardDetailDto {
 
 	private int likes;
 
-
+	private boolean isAuthorized;
 }

@@ -7,10 +7,16 @@
 
   <script th:inline="javascript">
     $(document).ready(() => {
-      const errorMessage = [[${ errorMessage }]];
+      let errorMessage = [[${ errorMessage }]];
       if (errorMessage != null) {
         alert(errorMessage);
       }
+
+      document.getElementById('deleteBtn')?.addEventListener('click', () => {
+        if(confirm("게시물를 삭제하시겠습니까?")) {
+          document.getElementById('btnForm').submit();
+        }
+      })
     });
   </script>
 
@@ -59,12 +65,12 @@
         </div>
       </div>
 
-      <div class="btn-group" role="group">
-        <form th:action="@{/board/delete/{id}(id=${boardDetail.id})}" method="post">
+      <div class="btn-group" role="group" th:if="${boardDetail.isAuthorized}">
+        <form th:action="@{/board/delete/{id}(id=${boardDetail.id})}" method="post" id="btnForm">
           <button type="button" class="btn btn-primary"
             th:onclick="|location.href='@{/board/update/{id}(id=${boardDetail.id})}'|">수정</button>
           <input type="hidden" name="_method" value="delete" />
-          <button type="submit" class="btn btn-danger">삭제</button>
+          <button type="button" class="btn btn-danger" id="deleteBtn">삭제</button>
         </form>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
       </div>
