@@ -25,6 +25,19 @@ public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
 
+	private static final String[] AUTHENTICATED_LIST = {
+			"/member/mypage/**",
+			"/member/find-pwd/**",
+			"/board/write",
+			"/board/update/**",
+			"/board/delete/**",
+			"/board/like",
+			"/board/uploadImg",
+			"/comment/write",
+			"/comment/update",
+			"/comment/delete/**"
+	};
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -47,10 +60,13 @@ public class SecurityConfig {
 				.logoutSuccessHandler((request, response, authentication) ->
 						response.sendRedirect("/")));
 
-		http
-				.sessionManagement((sessionManagement) ->
+		http.sessionManagement((sessionManagement) ->
 						sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 				.authorizeHttpRequests(authorize -> authorize
+						.requestMatchers(Arrays.stream(AUTHENTICATED_LIST)
+								.map(AntPathRequestMatcher::antMatcher)
+								.toArray(AntPathRequestMatcher[]::new))
+						.authenticated()
 						.requestMatchers(
 								new AntPathRequestMatcher("/"),
 								new AntPathRequestMatcher("/member/**"),
@@ -61,8 +77,12 @@ public class SecurityConfig {
 				);
 
 		http.exceptionHandling(httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
-				.authenticationEntryPoint((request, response, authException) ->
-						response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")));
+				.authenticationEntryPoint(
+						(request, response, authException) -> {
+							response.sendRedirect("/member/login");
+						}
+				)
+		);
 
 		return http.build();
 	}
@@ -96,11 +116,11 @@ public class SecurityConfig {
 	public WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring()
 				.requestMatchers(
-				new AntPathRequestMatcher("/css/**"),
-				new AntPathRequestMatcher("/js/**"),
-				new AntPathRequestMatcher("/img/**"),
-				new AntPathRequestMatcher("favicon.ico"),
-				new AntPathRequestMatcher("/error"))
+						new AntPathRequestMatcher("/css/**"),
+						new AntPathRequestMatcher("/js/**"),
+						new AntPathRequestMatcher("/img/**"),
+						new AntPathRequestMatcher("favicon.ico"),
+						new AntPathRequestMatcher("/error"))
 
 				.requestMatchers(Arrays.stream(IGNORE_WHITELIST)
 						.map(AntPathRequestMatcher::antMatcher)
