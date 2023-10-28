@@ -20,11 +20,6 @@
     <script th:inline="javascript">
 
         $(document).ready(() => {
-            const errorMessage = [[${ errorMessage }]];
-            if (errorMessage != null) {
-                alert(errorMessage);
-            }
-
             document.getElementById('findPwdBth').addEventListener('click', sendMail)
         });
 
@@ -32,7 +27,7 @@
             const header = $("meta[name='_csrf_header']").attr("content");
             const token = $("meta[name='_csrf']").attr("content");
 
-            const url = '/member/findPwd/sendMail';
+            const url = '/member/find-pwd/send-mail';
             const data = {
                 'email': document.getElementById('email').value
             };
@@ -99,14 +94,6 @@
                                         <input type="email" class="form-control" name="email" id="email" required>
                                     </div>
                                 </div>
-
-                                <!-- <div class="col-12">
-                        <label for="name" class="form-label">이름</label>
-                        <div class="input-group">
-                          <span class="input-group-text">@</span>
-                          <input type="text" class="form-control" name="name" id="name" required>
-                        </div>
-                      </div> -->
 
                                 <div class="col-12">
                                     <div class="d-grid">

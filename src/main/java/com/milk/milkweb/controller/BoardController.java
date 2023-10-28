@@ -53,7 +53,7 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
-	@GetMapping(value = {"/", "/list"})
+	@GetMapping(value = {"", "/list"})
 	public String getBoardList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, BoardSearchDto boardSearchDto) {
 		try {
 			Page<BoardListDto> boardListDtos;

@@ -60,12 +60,12 @@ public class MemberController {
 		return "member/memberLoginForm";
 	}
 
-	@GetMapping(value = "/findPwd")
+	@GetMapping(value = "/find-pwd")
 	public String findPwd() {
 		return "member/memberFindPwdForm";
 	}
 
-	@PostMapping(value = "/findPwd/sendMail")
+	@PostMapping(value = "/find-pwd/send-mail")
 	public ResponseEntity<?> sendTempPwdMail(@RequestBody MailPwdSendDto mailPwdSendDto) {
 		String tempPwd = emailService.getTempPassword();
 		try {
