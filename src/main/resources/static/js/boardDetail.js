@@ -4,6 +4,12 @@ axios.defaults.xsrfCookieName = token;
 axios.defaults.xsrfHeaderName = header;
 
 $(document).ready(() => {
+  document.getElementById("deleteBtn")?.addEventListener("click", () => {
+    if (confirm("게시물를 삭제하시겠습니까?")) {
+      document.getElementById("btnForm").submit();
+    }
+  });
+
   // 댓글 불러오기
   getComments(0);
 
@@ -192,6 +198,7 @@ const getComments = async (page) => {
 };
 
 const updateCommentForm = (comment) => {
+  document.getElementById("commentCancel_btn")?.click();
   const prevComment = $("#comment_" + comment.id).html();
 
   $("#comment_" + comment.id).html(`

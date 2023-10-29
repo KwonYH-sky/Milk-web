@@ -48,6 +48,16 @@ body {
   padding-top: 25px;
 }
 
-#editor{
-  min-height: 480px;
+.ql-editor{
+  min-height: 100vh;
+}
+
+.ql-video{
+  min-height: 60vh; 
+  min-width: 100vh;
+}
+
+.carousel-item {
+  width: 1440vh; 
+  height: 288vh;
 }
