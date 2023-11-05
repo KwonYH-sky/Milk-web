@@ -1,59 +1,77 @@
 package com.milk.milkweb.service;
 
-import com.milk.milkweb.dto.MemberFormDto;
+
+import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.AlreadyRegisterException;
+import com.milk.milkweb.repository.MemberRepository;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
-@Transactional
-@TestPropertySource(locations = "classpath:application-test.properties")
+
+@ExtendWith(MockitoExtension.class)
 public class MemberServiceTest {
 
-	@Autowired
+	private Member member;
+
+	@Mock
+	MemberRepository memberRepository;
+
+	@InjectMocks
 	MemberService memberService;
 
-	@Autowired
-	PasswordEncoder passwordEncoder;
-
-	public Member createMember() {
-		MemberFormDto member = new MemberFormDto();
-		member.setName("김우유");
-		member.setEmail("test@test.com");
-		member.setPassword("1234");
-		return Member.createMember(member, passwordEncoder);
+	@BeforeEach
+	void setUp() {
+		member = Member.builder()
+				.id(1L)
+				.name("김우유")
+				.email("test@test")
+				.password("1234")
+				.role(Role.ADMIN)
+				.build();
 	}
 
 	@Test
 	@DisplayName("회원가입 테스트")
-	void saveMemberTest() {
-		Member member = createMember();
+	void registerMemberService() {
+		// given
+		given(memberRepository.save(any())).willReturn(member);
+
+		// when
 		Member savedMember = memberService.saveMember(member);
 
-		assertEquals(member.getEmail(), savedMember.getEmail());
-		assertEquals(member.getName(), savedMember.getName());
-		assertEquals(member.getPassword(), savedMember.getPassword());
-		assertEquals(member.getRole(), savedMember.getRole());
+		// then
+		Assertions.assertThat(savedMember.getName()).isEqualTo(member.getName());
+		Assertions.assertThat(savedMember.getEmail()).isEqualTo(member.getEmail());
+	}
+
+
+	@Test
+	@DisplayName("이미 존재하는 이름 회원가입 테스트")
+	void validateNameRegister() {
+		// given
+		given(memberRepository.existsByName(member.getName())).willReturn(true);
+
+		// when, then
+		Assertions.assertThatThrownBy(() -> memberService.saveMember(member)).as("이름 일치 여부").isInstanceOf(AlreadyRegisterException.class);
 	}
 
 	@Test
-	@DisplayName("중복 회원가입 테스트")
-	void savedDuplicateMemberTest() {
-		Member member1 = createMember();
-		Member member2 = createMember();
+	@DisplayName("이미 존재하는 이메일 회원가입 테스트")
+	void validateEmailRegister() {
+		// given
+		given(memberRepository.findByEmail(member.getEmail())).willReturn(member);
 
-		Member savedMember = memberService.saveMember(member1);
-
-		Throwable e = assertThrows(IllegalStateException.class, () -> memberService.saveMember(member2));
-
-		assertEquals("이미 가입된 이메일입니다.", e.getMessage());
+		// when, then
+		Assertions.assertThatThrownBy(() -> memberService.saveMember(member)).as("이메일 일치 여부").isInstanceOf(AlreadyRegisterException.class);
 	}
 }

@@ -2,6 +2,8 @@ package com.milk.milkweb.repository;
 
 import com.milk.milkweb.config.TestQueryDslConfig;
 import com.milk.milkweb.constant.Role;
+import com.milk.milkweb.dto.BoardListDto;
+import com.milk.milkweb.dto.BoardSearchDto;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.BoardLike;
 import com.milk.milkweb.entity.Member;
@@ -162,6 +164,48 @@ class BoardRepositoryTest {
 
 		// then
 		Assertions.assertThat(weeklyBoards).as("비어있는지 여부").isEmpty();
+	}
+
+	@Test
+	@DisplayName("Search 테스트")
+	void searchTest() {
+		// given
+		List<Board> boards = IntStream.rangeClosed(0, 10).mapToObj(e -> createTestBoard()).toList();
+		boardRepository.saveAll(boards);
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		BoardSearchDto boardSearchDto = new BoardSearchDto();
+		boardSearchDto.setSearchType("title");
+		boardSearchDto.setKeyword("테");
+
+		// when
+		Page<BoardListDto> searchedBoards = boardRepository.findBySearch(boardSearchDto, pageable);
+
+		// then
+		Assertions.assertThat(searchedBoards).isNotEmpty();
+		Assertions.assertThat(searchedBoards.stream().findFirst().get().getTitle()).containsAnyOf(boardSearchDto.getKeyword());
+		Assertions.assertThat(searchedBoards.getTotalElements()).isEqualTo(boards.size());
+	}
+
+	@Test
+	@DisplayName("NOT Search 테스트")
+	void notSearchTest() {
+		// given
+		List<Board> boards = IntStream.rangeClosed(0, 10).mapToObj(e -> createTestBoard()).toList();
+		boardRepository.saveAll(boards);
+
+		Pageable pageable = PageRequest.of(0, 10);
+
+		BoardSearchDto boardSearchDto = new BoardSearchDto();
+		boardSearchDto.setSearchType("title");
+		boardSearchDto.setKeyword("몰?루");
+
+		// when
+		Page<BoardListDto> searchedBoards = boardRepository.findBySearch(boardSearchDto, pageable);
+
+		// then
+		Assertions.assertThat(searchedBoards).isEmpty();
 	}
 
 	private Board createTestBoard() {
