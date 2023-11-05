@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping(value = "/comment")
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class CommentController {
 
 	@GetMapping("/board/{boardId}")
 	public @ResponseBody ResponseEntity getCommentPage(@PathVariable Long boardId, @RequestParam(value = "page", defaultValue = "0") int page, @AuthenticationPrincipal CustomUserDetails principal) {
-		String email = principal != null ? principal.getName() : "Not Login";
+		String email = Optional.ofNullable(principal).map(CustomUserDetails::getName).orElse("Not Login");
 		try {
 			Page<CommentListDto> dtoPage = commentService.getCommentList(page, boardId, email);
 			return new ResponseEntity<>(dtoPage, HttpStatus.OK);
