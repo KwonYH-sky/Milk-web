@@ -1,9 +1,5 @@
 name: CI
 
-permissions:
-  checks: write
-  pull-requests: write
-
 on:
   push:
     branches: [main]
@@ -36,12 +32,9 @@ jobs:
         with:
           arguments: build
           
-        # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
+      # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2.11.0
+        uses: EnricoMi/publish-unit-test-result-action@v1
         if: ${{ always() }}  # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
         with:
-          files: |
-            test-results/**/*.xml
-            test-results/**/*.trx
-            test-results/**/*.json
+          files: build/test-results/**/*.xml
