@@ -16,7 +16,7 @@ jobs:
           java-version: "17"
 
       - name: Setup MySQL
-        uses: samin/mysql-action@v1
+        uses: samin/mysql-action@v1.3
         with:
           character set server: "utf8"
           host port: 80
