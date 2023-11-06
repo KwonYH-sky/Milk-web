@@ -19,7 +19,9 @@ jobs:
         uses: samin/mysql-action@v1
         with:
           character set server: "utf8"
+          host port: 80
           mysql database: "milkweb"
+          mysql version: '8.0'
           mysql user: ${{secrets.MY_SQL_USER}}
           mysql password: ${{secrets.MY_SQL_PWD}}
 
