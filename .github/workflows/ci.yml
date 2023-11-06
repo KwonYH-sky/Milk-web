@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-    paths:
-      - src/main/java/**
 
 jobs:
   build:
@@ -17,14 +15,6 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: build
-
       - name: Setup MySQL
         uses: samin/mysql-action@v1
         with:
@@ -32,3 +22,11 @@ jobs:
           mysql database: "milkweb"
           mysql user: ${{secrets.MY_SQL_USER}}
           mysql password: ${{secrets.MY_SQL_PWD}}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
