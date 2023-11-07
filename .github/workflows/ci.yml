@@ -23,16 +23,15 @@ jobs:
           java-version: "17"
 
       - name: Setup MySQL
-        uses: samin/mysql-action@v1.3
+        uses: mirromutth/mysql-action@v1.1
         with:
           character set server: "utf8"
           mysql database: "milkweb"
-          mysql version: '8.0'
           mysql root password: ${{secrets.MY_SQL_PWD}}
 
       - name: Test MySQL Connection
         run: |
-          mysql -h localhost -u root -p1234 -h 127.0.0.1 -e "SELECT 1;"
+          mysql -h 127.0.0.1 -u root -p${{secrets.MY_SQL_PWD}} -e "SELECT 1;"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
