@@ -1,5 +1,9 @@
 name: CI
 
+permissions:
+  checks: write
+  pull-requests: write
+
 on:
   push:
     branches: [main]
@@ -21,8 +25,7 @@ jobs:
           character set server: "utf8"
           mysql database: "milkweb"
           mysql version: '8.0'
-          mysql user: ${{secrets.MY_SQL_USER}}
-          mysql password: ${{secrets.MY_SQL_PWD}}
+          mysql root password: ${{secrets.MY_SQL_PWD}}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
