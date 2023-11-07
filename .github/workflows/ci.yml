@@ -32,7 +32,7 @@ jobs:
 
       - name: Test MySQL Connection
         run: |
-          mysql -h localhost -u root -p1234 -e "SELECT 1;"
+          mysql -h localhost -u root -p1234 -h 127.0.0.1 -e "SELECT 1;"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
