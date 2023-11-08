@@ -14,7 +14,6 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
-        restart: always
         env:
           MYSQL_DATABASE: milkweb
           MYSQL_ROOT_PASSWORD: ${{secrets.MY_SQL_PWD}}
