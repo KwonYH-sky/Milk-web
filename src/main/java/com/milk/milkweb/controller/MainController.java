@@ -24,7 +24,7 @@ public class MainController {
 		Map<String, List<MainBoardDto>> lists = new HashMap<>();
 		lists.put("boards", boardService.getMainBoard());
 		lists.put("dailyBest", boardService.getDailyBest());
-		lists.put("weeklyBest", boardService.getWeelyBest());
+		lists.put("weeklyBest", boardService.getWeeklyBest());
 		model.addAllAttributes(lists);
 		return "index";
 	}

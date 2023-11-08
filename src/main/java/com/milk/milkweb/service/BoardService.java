@@ -48,7 +48,7 @@ public class BoardService {
 		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
 		Page<Board> boards = boardRepository.findAll(pageable);
 
-		Page<BoardListDto> boardListDtos = boards.map(board -> BoardListDto.builder()
+		return boards.map(board -> BoardListDto.builder()
 				.id(board.getId())
 				.title(board.getTitle())
 				.memberName(board.getMember().getName())
@@ -56,8 +56,6 @@ public class BoardService {
 				.likes(board.getLikes().size())
 				.createdTime(board.getCreatedTime())
 				.build());
-
-		return boardListDtos;
 	}
 
 	@Transactional(readOnly = true)
@@ -72,7 +70,7 @@ public class BoardService {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		board.increaseView();
 
-		BoardDetailDto boardDetailDto = BoardDetailDto.builder()
+		return BoardDetailDto.builder()
 				.id(board.getId())
 				.title(board.getTitle())
 				.content(board.getContent())
@@ -83,26 +81,22 @@ public class BoardService {
 				.likes(board.getLikes().size())
 				.isAuthorized(board.getMember().getId().equals(member.getId()) || member.getRoleKey().equals(Role.ADMIN.getKey()))
 				.build();
-
-		return boardDetailDto;
 	}
 
 	@Transactional(readOnly = true)
 	public BoardUpdateDto getUpdateForm(Long id, String email) throws Exception {
 		Board board = validateMemberBoard(id, email);
 
-		BoardUpdateDto boardUpdateDto = BoardUpdateDto.builder()
+		return BoardUpdateDto.builder()
 				.id(board.getId())
 				.title(board.getTitle())
 				.content(board.getContent())
 				.build();
-		return boardUpdateDto;
 	}
 
-	public Board updateBoard(BoardUpdateDto boardUpdateDto, Long id) {
+	public void updateBoard(BoardUpdateDto boardUpdateDto, Long id) {
 		Board board = boardRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 		board.update(boardUpdateDto);
-		return board;
 	}
 
 	public void deleteBoard(Long id, String email) {
@@ -122,20 +116,20 @@ public class BoardService {
 
 	@Transactional(readOnly = true)
 	public List<MainBoardDto> getMainBoard() {
-		List<Board> boards = boardRepository.findMainBoards();
-		List<MainBoardDto> mainBoardList = boards.stream().map(board -> MainBoardDto.of(board)).toList();
-		return mainBoardList;
+		Pageable pageable = PageRequest.of(0, 10);
+		List<Board> boards = boardRepository.findMainBoards(pageable);
+		return boards.stream().map(MainBoardDto::of).toList();
 	}
 
 	@Transactional(readOnly = true)
 	public List<MainBoardDto> getDailyBest() {
 		List<Board> boards = boardRepository.findDailyBest();
-		return boards.stream().map(board -> MainBoardDto.of(board)).toList();
+		return boards.stream().map(MainBoardDto::of).toList();
 	}
 
 	@Transactional(readOnly = true)
-	public List<MainBoardDto> getWeelyBest() {
+	public List<MainBoardDto> getWeeklyBest() {
 		List<Board> boards = boardRepository.findWeeklyBest();
-		return boards.stream().map(board -> MainBoardDto.of(board)).toList();
+		return boards.stream().map(MainBoardDto::of).toList();
 	}
 }

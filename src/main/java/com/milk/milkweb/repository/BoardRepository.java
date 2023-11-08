@@ -11,6 +11,6 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardCustomRepository {
 	Page<Board> findAll(Pageable pageable);
 
-	@Query(value = "SELECT * FROM Board b ORDER BY b.board_id DESC LIMIT 10", nativeQuery = true)
-	List<Board> findMainBoards();
+	@Query("SELECT b FROM Board b ORDER BY b.id DESC")
+	List<Board> findMainBoards(Pageable pageable);
 }
