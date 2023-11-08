@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v4
       - run: touch ./src/main/resources/application-oauth.properties
@@ -31,6 +31,9 @@ jobs:
           character set server: "utf8"
           mysql database: "milkweb"
           mysql root password: ${{secrets.MY_SQL_PWD}}
+
+      - name: MySQL
+        run: sudo mysql --user=root --password=${{secrets.MY_SQL_PWD}}
 
       - name: Test MySQL Connection
         run: |
