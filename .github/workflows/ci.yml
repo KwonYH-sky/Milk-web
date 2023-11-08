@@ -11,6 +11,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: milkweb
+          MYSQL_ROOT_PASSWORD: ${{secrets.MY_SQL_PWD}}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v4
       - run: touch ./src/main/resources/application-oauth.properties
@@ -21,16 +30,6 @@ jobs:
         with:
           distribution: "zulu"
           java-version: "17"
-
-      - name: Shutdown Ubuntu MySQL (SUDO)
-        run: sudo service mysql stop # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
-    
-      - name: Start MySQL
-        uses: samin/mysql-action@v1.3
-        with:
-          character set server: "utf8"
-          mysql database: "milkweb"
-          mysql root password: ${{secrets.MY_SQL_PWD}}
 
       - name: MySQL
         run: sudo mysql --user=root --password=${{secrets.MY_SQL_PWD}}
