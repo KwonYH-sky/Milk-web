@@ -14,6 +14,7 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
+        restart: always
         env:
           MYSQL_DATABASE: milkweb
           MYSQL_ROOT_PASSWORD: ${{secrets.MY_SQL_PWD}}
@@ -31,9 +32,9 @@ jobs:
           distribution: "zulu"
           java-version: "17"
 
-      - name: MySQL
-        run: sudo mysql --user=root --password=${{secrets.MY_SQL_PWD}}
-          
+      - name: Install MySQL Server
+        run: sudo apt-get install mysql-server
+
       - name: Test MySQL Connection
         run: |
           mysql -h 127.0.0.1 -u root -p${{secrets.MY_SQL_PWD}} -e "SELECT 1;"
