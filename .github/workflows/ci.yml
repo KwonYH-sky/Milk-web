@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: touch ./src/main/resources/application-oauth.properties
@@ -34,7 +34,7 @@ jobs:
 
       - name: MySQL
         run: sudo mysql --user=root --password=${{secrets.MY_SQL_PWD}}
-
+          
       - name: Test MySQL Connection
         run: |
           mysql -h 127.0.0.1 -u root -p${{secrets.MY_SQL_PWD}} -e "SELECT 1;"
