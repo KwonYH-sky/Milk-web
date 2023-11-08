@@ -95,7 +95,7 @@ class BoardRepositoryTest {
 		boardRepository.saveAll(boards);
 
 		// when
-		List<Board> mainBoards = boardRepository.findMainBoards();
+		List<Board> mainBoards = boardRepository.findMainBoards(PageRequest.of(0, 10));
 
 		// then
 		Assertions.assertThat(mainBoards).as("존재 여부").isNotNull();

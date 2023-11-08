@@ -65,7 +65,7 @@ class MemberRepositoryTest {
 		memberRepository.save(member);
 		
 		// when
-		boolean check = memberRepository.existsByName("김우유");
+		boolean check = memberRepository.existsByName(member.getName());
 		
 		// then
 		Assertions.assertThat(check).as("존재하니?").isTrue();
@@ -78,7 +78,7 @@ class MemberRepositoryTest {
 		memberRepository.save(member);
 
 		// when
-		boolean check = memberRepository.existsByName("흰우유");
+		boolean check = memberRepository.existsByName("");
 
 		// then
 		Assertions.assertThat(check).as("존재 하면 안돼").isFalse();
