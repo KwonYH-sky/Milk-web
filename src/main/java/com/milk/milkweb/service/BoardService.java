@@ -84,7 +84,7 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public BoardUpdateDto getUpdateForm(Long id, String email) throws Exception {
+	public BoardUpdateDto getUpdateForm(Long id, String email) {
 		Board board = validateMemberBoard(id, email);
 
 		return BoardUpdateDto.builder()

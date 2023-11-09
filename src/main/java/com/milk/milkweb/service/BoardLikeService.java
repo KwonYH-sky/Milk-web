@@ -24,16 +24,15 @@ public class BoardLikeService {
 	private final MemberRepository memberRepository;
 	private final BoardLikeRepository boardLikeRepository;
 
-	public BoardLike addBoardLike(BoardLikeDto boardLikeDto, String email) {
+	public void addBoardLike(BoardLikeDto boardLikeDto, String email) {
 		Board board = boardRepository.findById(boardLikeDto.getBoardId()).orElseThrow(EntityNotFoundException::new);
-		Optional<Member> memberOp = Optional.ofNullable(memberRepository.findByEmail(email));
-		Member member = memberOp.orElseThrow(EntityNotFoundException::new);
+		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 
 		if(boardLikeRepository.findByBoardAndMember(board, member).isPresent()){
 			throw new AlreadyLikeException("이미 좋아요를 했습니다.");
 		}
 
-		return boardLikeRepository.save(BoardLike.createBoardLikeEntity(board, member));
+		boardLikeRepository.save(BoardLike.createBoardLikeEntity(board, member));
 	}
 
 	public int getBoardLike(Long id) {
