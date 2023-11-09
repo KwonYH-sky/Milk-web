@@ -1,8 +1,7 @@
 package com.milk.milkweb.service;
 
 import com.milk.milkweb.constant.Role;
-import com.milk.milkweb.dto.BoardFormDto;
-import com.milk.milkweb.dto.BoardListDto;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Board;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.exception.MemberValidationException;
@@ -12,9 +11,11 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,7 @@ import java.util.stream.LongStream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+@ExtendWith(MockitoExtension.class)
 class BoardServiceTest {
 
 	private Board board;
@@ -46,7 +48,6 @@ class BoardServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.openMocks(this);
 		member = Member.builder()
 				.id(1L)
 				.name("김우유")
@@ -127,7 +128,7 @@ class BoardServiceTest {
 	}
 
 	@Test
-	@DisplayName("BoardList Test")
+	@DisplayName("전체 게시물 목록 테스트")
 	void getBoardListTest() {
 		// given
 		List<Board> dummyBoardList = LongStream.range(2, 22).mapToObj(this::createBoard).toList();
@@ -140,8 +141,81 @@ class BoardServiceTest {
 		// then
 		Assertions.assertThat(page).as("존재 하는지").isNotEmpty();
 	}
+	
+	@Test
+	@DisplayName("게시물 상세정보 테스트")
+	void getDetailBoardTest() {
+		// given
+		given(boardRepository.findById(board.getId())).willReturn(Optional.ofNullable(board));
 
+		// when
+		BoardDetailDto boardDetailDto = boardService.getDetail(board.getId(), member);
 
+		// then
+		Assertions.assertThat(boardDetailDto).as("존재 여부").isNotNull();
+		Assertions.assertThat(boardDetailDto.getTitle()).isEqualTo(board.getTitle());
+		Assertions.assertThat(boardDetailDto.getContent()).isEqualTo(board.getContent());
+		Assertions.assertThat(board.getViews()).as("조회수 증가 했는지").isGreaterThanOrEqualTo(1);
+		Assertions.assertThat(boardDetailDto.isAuthorized()).as("수정 삭제 권한이 있는지").isTrue();
+
+	}
+
+	@Test
+	@DisplayName("게시물 수정 폼 테스트")
+	void getUpdateFormTest() {
+		// given
+		given(memberRepository.findByEmail(member.getEmail())).willReturn(member);
+		given(boardRepository.findById(board.getId())).willReturn(Optional.ofNullable(board));
+
+		// when
+		BoardUpdateDto boardUpdateDto = boardService.getUpdateForm(board.getId(), member.getEmail());
+
+		// then
+		Assertions.assertThat(boardUpdateDto).as("존재 여부").isNotNull();
+		Assertions.assertThat(boardUpdateDto.getId()).isEqualTo(board.getId());
+		Assertions.assertThat(boardUpdateDto.getTitle()).isEqualTo(board.getTitle());
+		Assertions.assertThat(boardUpdateDto.getContent()).isEqualTo(board.getContent());
+	}
+
+	@Test
+	@DisplayName("메인 게시물 테스트")
+	void getMainBoardListTest() {
+		// given
+		List<Board> dummyBoardList = LongStream.range(2, 22).mapToObj(this::createBoard).toList();
+		given(boardRepository.findMainBoards(any(Pageable.class))).willReturn(dummyBoardList);
+
+		// when
+		List<MainBoardDto> mainBoard = boardService.getMainBoard();
+
+		// then
+		Assertions.assertThat(mainBoard).as("존재 하는지").isNotEmpty();
+	}
+
+	@Test
+	@DisplayName("메인 Daily Best 테스트")
+	void getDailyBoardTest() {
+		List<Board> dummyBoardList = LongStream.range(2, 22).mapToObj(this::createBoard).toList();
+		given(boardRepository.findDailyBest()).willReturn(dummyBoardList);
+
+		// when
+		List<MainBoardDto> dailyBest = boardService.getDailyBest();
+
+		// then
+		Assertions.assertThat(dailyBest).as("존재 하는지").isNotEmpty();
+	}
+
+	@Test
+	@DisplayName("메인 Weekly Best 테스트")
+	void getWeeklyBoardTest() {
+		List<Board> dummyBoardList = LongStream.range(2, 22).mapToObj(this::createBoard).toList();
+		given(boardRepository.findWeeklyBest()).willReturn(dummyBoardList);
+
+		// when
+		List<MainBoardDto> dailyBest = boardService.getWeeklyBest();
+
+		// then
+		Assertions.assertThat(dailyBest).as("존재 하는지").isNotEmpty();
+	}
 
 	public Board createBoard(Long n) {
 		return Board.builder()
