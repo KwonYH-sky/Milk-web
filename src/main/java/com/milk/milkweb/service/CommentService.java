@@ -31,7 +31,7 @@ public class CommentService {
 	private final MemberRepository memberRepository;
 	private final CommentRepository commentRepository;
 
-	public Comment saveComment(CommentFormDto commentFormDto, String email) {
+	public void saveComment(CommentFormDto commentFormDto, String email) {
 		Board board = boardRepository.findById(commentFormDto.getBoardId()).orElseThrow(EntityNotFoundException::new);
 		Member member = Optional.of(memberRepository.findByEmail(email)).orElseThrow(EntityNotFoundException::new);
 
@@ -43,7 +43,7 @@ public class CommentService {
 				.board(board)
 				.build();
 
-		return commentRepository.save(comment);
+		commentRepository.save(comment);
 	}
 
 	@Transactional(readOnly = true)
@@ -52,14 +52,12 @@ public class CommentService {
 		Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
 		Member member = Optional.ofNullable(memberRepository.findByEmail(email)).orElse(Member.builder().role(Role.USER).build());
 
-		Page<CommentListDto> commentListDtos = comments.map(comment -> CommentListDto.builder()
+		return comments.map(comment -> CommentListDto.builder()
 				.id(comment.getId())
 				.memberName(comment.getMember().getName())
 				.comment(comment.getComment())
 				.isUserCommentAuthor(member.equals(comment.getMember()) || member.getRoleKey().equals(Role.ADMIN.getKey()))
 				.build());
-
-		return commentListDtos;
 	}
 
 	public void updateComment(CommentUpdateDto commentUpdateDto, String email) {
