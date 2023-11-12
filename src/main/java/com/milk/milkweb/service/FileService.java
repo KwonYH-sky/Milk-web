@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -40,7 +42,8 @@ public class FileService {
 	}
 
 	public Resource downloadFile(String downloadLocation, String path, String fileName) {
-		Resource resource = new FileSystemResource(downloadLocation + "\\" + path + "\\" + fileName);
+		Path filePath = Paths.get(downloadLocation, path, fileName);
+		Resource resource = new FileSystemResource(filePath);
 		log.debug("FIleService downloadFile() resource " + resource.toString());
 		if (!resource.exists()){
 			log.error("FileService downloadFile() resource is not exists.");
