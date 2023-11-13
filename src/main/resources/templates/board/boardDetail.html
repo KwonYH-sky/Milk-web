@@ -72,20 +72,20 @@
     </div>
 
     <div class="m-5">
-      <!-- 댓글 작성창 -->
+      <!--/* 댓글 작성창 */-->
       <div class="form-floating" sec:authorize="isAuthenticated()">
         <textarea class="form-control" id="comment_input" placeholder="댓글을 남겨 주세요." style="height: 100px"></textarea>
         <label for="floatingTextarea">댓글을 남겨 주세요.</label>
         <button type="button" id="comment_btn" class="btn btn-primary my-3">댓글 쓰기</button>
       </div>
 
-      <!-- 댓글 리스트 -->
+      <!--/* 댓글 리스트 */-->
       <div id="comment_list">
         <ul id="comments" class="card-body">
 
         </ul>
 
-        <!-- 댓글 페이징 -->
+        <!--/* 댓글 페이징 */-->
         <nav>
           <ul id="comment_paging" class="pagination justify-content-center">
 

@@ -70,7 +70,7 @@ public class BoardController {
 		} catch (Exception e) {
 			model.addAttribute("paging", boardService.getBoardList(0));
 		}
-		return "/board/boardList";
+		return "board/boardList";
 	}
 
 	@GetMapping(value = "/{id}")
@@ -84,7 +84,7 @@ public class BoardController {
 			return "redirect:/";
 		}
 
-		return "/board/boardDetail";
+		return "board/boardDetail";
 	}
 
 	@GetMapping(value = "/update/{id}")
@@ -96,13 +96,13 @@ public class BoardController {
 			model.addAttribute("errorMessage", "권한이 없습니다.");
 			return "redirect:/board/{id}";
 		}
-		return "/board/boardUpdateForm";
+		return "board/boardUpdateForm";
 	}
 
 	@PostMapping(value = "/update/{id}")
 	public String updateBoard(@Valid BoardUpdateDto boardUpdateDto, @PathVariable Long id, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			return "/board/boardUpdateForm";
+			return "board/boardUpdateForm";
 		}
 		try {
 			boardService.updateBoard(boardUpdateDto, id);

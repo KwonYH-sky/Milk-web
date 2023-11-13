@@ -27,7 +27,6 @@ public class SecurityConfig {
 
 	private static final String[] AUTHENTICATED_LIST = {
 			"/member/mypage/**",
-			"/member/find-pwd/**",
 			"/board/write",
 			"/board/update/**",
 			"/board/delete/**",
