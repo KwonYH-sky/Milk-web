@@ -29,9 +29,8 @@ public class EmailService {
 
 	public String getTempPassword() {
 		UUID uuid = UUID.randomUUID();
-		String password = uuid.toString().replace("-", "").substring(10);
 
-		return password;
+		return uuid.toString().replace("-", "").substring(22);
 	}
 
 }
