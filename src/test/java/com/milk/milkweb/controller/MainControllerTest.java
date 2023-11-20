@@ -1,12 +1,17 @@
 package com.milk.milkweb.controller;
 
+import com.milk.milkweb.config.OAuth2Config;
+import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.dto.MainBoardDto;
 import com.milk.milkweb.service.BoardService;
+import com.milk.milkweb.service.CustomOAuth2UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import({SecurityConfig.class, OAuth2Config.class})
 @WebMvcTest(MainController.class)
 class MainControllerTest {
 
@@ -27,9 +33,11 @@ class MainControllerTest {
 
 	@MockBean
 	private BoardService boardService;
+	@MockBean
+	private CustomOAuth2UserService customOAuth2UserService;
 
 	@Test
-	@WithMockUser
+	@WithAnonymousUser
 	@DisplayName("메인 화면 게시물 GET 테스트")
 	void getMainTest() throws Exception {
 		// given
