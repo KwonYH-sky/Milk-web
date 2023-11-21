@@ -1,5 +1,6 @@
 package com.milk.milkweb.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milk.milkweb.config.OAuth2Config;
 import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.dto.MemberFormDto;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -22,8 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Import({SecurityConfig.class, OAuth2Config.class})
 @WebMvcTest(MemberController.class)
@@ -31,6 +33,8 @@ public class MemberControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@MockBean
 	private MemberService memberService;
@@ -50,6 +54,23 @@ public class MemberControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("memberFormDto"))
 				.andExpect(model().attribute("memberFormDto", Matchers.instanceOf(MemberFormDto.class)));
+	}
+
+	@Test
+	@DisplayName("회원 가입 성공 테스트")
+	void registerMemberSuccessTest() throws Exception {
+		// given
+		MemberFormDto memberFormDto = MemberFormDto.builder()
+				.email("test@test.com")
+				.name("tester")
+				.password("12345678")
+				.build();
+
+		// when, then
+		mockMvc.perform(post("/member/register").with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(memberFormDto)))
+				.andExpect(status().is2xxSuccessful());
 	}
 
 	@Test
