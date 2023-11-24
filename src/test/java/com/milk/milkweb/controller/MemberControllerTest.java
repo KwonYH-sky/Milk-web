@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milk.milkweb.config.OAuth2Config;
 import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.constant.Role;
-import com.milk.milkweb.dto.CustomUserDetails;
-import com.milk.milkweb.dto.MailDto;
-import com.milk.milkweb.dto.MailPwdSendDto;
-import com.milk.milkweb.dto.MemberFormDto;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.service.CustomOAuth2UserService;
 import com.milk.milkweb.service.EmailService;
 import com.milk.milkweb.service.MemberService;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +56,17 @@ public class MemberControllerTest {
 	private EmailService emailService;
 	@MockBean
 	PasswordEncoder passwordEncoder;
+
+	@BeforeEach
+	void setUp() {
+		mockUser = new CustomUserDetails(Member.builder()
+				.id(1L)
+				.name("김우유")
+				.email("test@test")
+				.password("1234")
+				.role(Role.ADMIN)
+				.build());
+	}
 
 	@Test
 	@WithAnonymousUser
@@ -111,20 +120,41 @@ public class MemberControllerTest {
 	@Test
 	@DisplayName("MyPage 요청 테스트")
 	void toMyPageTest() throws Exception {
-		// given
-		mockUser = new CustomUserDetails(Member.builder()
-				.id(1L)
-				.name("김우유")
-				.email("test@test")
-				.password("1234")
-				.role(Role.ADMIN)
-				.build());
-
 		// when, then
 		mockMvc.perform(get("/member/mypage").with(user(mockUser)))
 				.andExpect(status().isOk())
 				.andExpect(view().name("member/memberMyPage"))
 				.andExpect(model().attributeExists("MemberName"));
+	}
+
+	@Test
+	@DisplayName("이름 변경 요청 테스트")
+	void changeNameTest() throws Exception {
+		// given
+		MyPageNameDto myPageNameDto = MyPageNameDto.builder()
+				.name("흰우유")
+				.build();
+
+		// when, then
+		mockMvc.perform(post("/member/mypage/change-name")
+						.with(csrf())
+						.with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(myPageNameDto)))
+				.andExpect(status().isOk());
+
+		verify(memberService, times(1)).updateName(eq(mockUser.getName()), eq(myPageNameDto.getName()));
+	}
+
+	@Test
+	@DisplayName("비밀번호 수정 GET 요청 테스트")
+	void toModifyPwdTest() throws Exception {
+		// when, then
+		mockMvc.perform(get("/member/mypage/modify-info").with(user(mockUser)))
+				.andExpect(status().isOk())
+				.andExpect(view().name("member/memberModifyPwd"))
+				.andExpect(model().attributeExists("isSocial"))
+				.andExpect(model().attribute("isSocial", false));
 	}
 
 	@Test
