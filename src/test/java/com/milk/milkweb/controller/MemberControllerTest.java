@@ -21,15 +21,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -158,6 +156,50 @@ public class MemberControllerTest {
 	}
 
 	@Test
+	@DisplayName("비밀번호 변경 검증 성공 테스트")
+	void validatePwdTest() throws Exception {
+		// given
+		MyPagePasswordDto myPagePasswordDto = new MyPagePasswordDto();
+		given(memberService.validatePassword(mockUser, myPagePasswordDto.getPassword(), passwordEncoder)).willReturn(true);
+
+		// when, given
+		mockMvc.perform(post("/member/mypage/validate-pwd").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(myPagePasswordDto)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("비밀번호 변경 검증 실패 테스트")
+	void validatePwdFailTest() throws Exception {
+		// given
+		MyPagePasswordDto myPagePasswordDto = new MyPagePasswordDto();
+		given(memberService.validatePassword(mockUser, myPagePasswordDto.getPassword(), passwordEncoder)).willReturn(false);
+
+		// when, given
+		mockMvc.perform(post("/member/mypage/validate-pwd").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(myPagePasswordDto)))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@DisplayName("비밀 번호 변경 요청 테스트")
+	void changePwdTest() throws Exception {
+		// given
+		MyPagePasswordDto myPagePasswordDto = MyPagePasswordDto.builder()
+				.password("testPassword")
+				.build();
+
+		// when, then
+		mockMvc.perform(post("/member/mypage/modify-info")
+						.with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(myPagePasswordDto)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
 	@WithMockUser(username = "test@test.com", password = "1234")
 	@DisplayName("로그인 성공 테스트")
 	public void loginSuccessTest() throws Exception {
@@ -175,7 +217,7 @@ public class MemberControllerTest {
 
 	@Test
 	@DisplayName("로그인 실패 테스트")
-	public void loginFailTest() throws Exception{
+	public void loginFailTest() throws Exception {
 		// given
 		String email = "test@test.com";
 		String wrongPassword = "wrongPassword";
