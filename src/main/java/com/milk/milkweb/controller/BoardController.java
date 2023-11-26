@@ -43,9 +43,9 @@ public class BoardController {
 	@PostMapping(value = "/write")
 	public String writeBoard(@Valid BoardFormDto boardFormDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails principal, Model model) {
 		log.debug("principal = "+ principal);
-		if (bindingResult.hasErrors()) {
+		if (bindingResult.hasErrors())
 			return "board/boardForm";
-		}
+
 		try {
 			boardService.saveBoard(boardFormDto, principal.getName());
 		} catch (Exception e) {
@@ -59,12 +59,9 @@ public class BoardController {
 	@GetMapping(value = {"", "/list"})
 	public String getBoardList(Model model, @RequestParam(value = "page", defaultValue = "0") int page, BoardSearchDto boardSearchDto) {
 		try {
-			Page<BoardListDto> boardListDtos;
-			if (boardSearchDto.isSearching()){
-				boardListDtos = boardService.getSearchBoardList(boardSearchDto, page);
-			} else {
-				boardListDtos = boardService.getBoardList(page);
-			}
+			Page<BoardListDto> boardListDtos = boardSearchDto.isSearching() ? 
+					boardService.getSearchBoardList(boardSearchDto, page) : boardService.getBoardList(page);
+
 			model.addAttribute("paging", boardListDtos);
 			model.addAttribute("boardSearchDto", boardSearchDto); // 현재 검색 파라미터를 모델에 추가
 		} catch (Exception e) {
@@ -101,9 +98,9 @@ public class BoardController {
 
 	@PostMapping(value = "/update/{id}")
 	public String updateBoard(@Valid BoardUpdateDto boardUpdateDto, @PathVariable Long id, BindingResult bindingResult, Model model) {
-		if (bindingResult.hasErrors()) {
+		if (bindingResult.hasErrors())
 			return "board/boardUpdateForm";
-		}
+
 		try {
 			boardService.updateBoard(boardUpdateDto, id);
 		} catch (Exception e) {
