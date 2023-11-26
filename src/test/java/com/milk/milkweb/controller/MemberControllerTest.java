@@ -89,9 +89,11 @@ public class MemberControllerTest {
 
 		// when, then
 		mockMvc.perform(post("/member/register").with(csrf())
-						.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-						.content(objectMapper.writeValueAsString(memberFormDto)))
-				.andExpect(status().is2xxSuccessful());
+				.param("name", memberFormDto.getName())
+				.param("email", memberFormDto.getEmail())
+				.param("password", memberFormDto.getPassword())
+				)
+				.andExpect(status().is3xxRedirection());
 	}
 
 	@Test
