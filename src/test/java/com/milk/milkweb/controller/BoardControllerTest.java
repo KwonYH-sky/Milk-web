@@ -3,11 +3,9 @@ package com.milk.milkweb.controller;
 import com.milk.milkweb.config.OAuth2Config;
 import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.constant.Role;
-import com.milk.milkweb.dto.BoardFormDto;
-import com.milk.milkweb.dto.BoardListDto;
-import com.milk.milkweb.dto.BoardSearchDto;
-import com.milk.milkweb.dto.CustomUserDetails;
+import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.MemberValidationException;
 import com.milk.milkweb.service.BoardImgService;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
@@ -127,5 +125,70 @@ public class BoardControllerTest {
 				.andExpect(model().attributeExists("paging"))
 				.andExpect(model().attributeExists("boardSearchDto"));
 		verify(boardService, times(1)).getSearchBoardList(any(BoardSearchDto.class), anyInt());
+	}
+
+	@Test
+	@DisplayName("Board 상세보기 GET 테스트")
+	void boardDetailTest() throws Exception {
+		// given
+		BoardDetailDto boardDetailDto = BoardDetailDto.builder()
+				.title("test")
+				.content("테스트")
+				.build();
+
+		given(boardService.getDetail(1L, mockUser.getMember())).willReturn(boardDetailDto);
+
+		// when, then
+		mockMvc.perform(get("/board/1").with(user(mockUser)))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("boardDetail"))
+				.andExpect(view().name("board/boardDetail"));
+	}
+
+	@Test
+	@DisplayName("Board UpdateForm GET 테스트")
+	void getBoardUpdateFormTest() throws Exception {
+		// given
+		BoardUpdateDto boardUpdateDto = BoardUpdateDto.builder()
+				.title("테스트")
+				.content("테스트")
+				.build();
+
+		given(boardService.getUpdateForm(1L, mockUser.getName())).willReturn(boardUpdateDto);
+
+		// when, then
+		mockMvc.perform(get("/board/update/1").with(user(mockUser)))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("boardUpdateDto"))
+				.andExpect(view().name("board/boardUpdateForm"));
+
+	}
+
+	@Test
+	@DisplayName("Board UpdateForm GET 인증 실패 테스트")
+	void getBoardUpdateFormFailTest() throws Exception {
+		// given
+		given(boardService.getUpdateForm(1L, mockUser.getName())).willThrow(MemberValidationException.class);
+
+		// when, then
+		mockMvc.perform(get("/board/update/1").with(user(mockUser)))
+				.andExpect(status().is3xxRedirection());
+	}
+
+	@Test
+	@DisplayName("Board Update Post 요청 테스트")
+	void updateBoardTest() throws Exception {
+		// given
+		BoardUpdateDto mockUpdateDto = BoardUpdateDto.builder()
+				.id(1L)
+				.title("테스트")
+				.content("테스트")
+				.build();
+
+		mockMvc.perform(post("/board/update/1").with(csrf()).with(user(mockUser))
+						.param("id", mockUpdateDto.getId().toString())
+						.param("title", mockUpdateDto.getTitle())
+						.param("content", mockUpdateDto.getContent()))
+				.andExpect(status().is3xxRedirection());
 	}
 }
