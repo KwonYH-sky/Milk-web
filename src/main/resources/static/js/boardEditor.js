@@ -18,10 +18,23 @@ window.onload = () => {
   editor.on("text-change", () => {
     document.getElementById("content").value = editor.root.innerHTML;
   });
-  
+
   editor.getModule("toolbar").addHandler("image", function () {
     imageHandler(editor);
   });
+
+  document.getElementById("submitBth").addEventListener("click", () => {
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+
+    if (title == "" || content == "") {
+      alert("제목 혹은 내용을 입력해주세요.");
+      return;
+    }
+
+    document.getElementById("boardForm").submit();
+  });
+
 };
 
 const imageHandler = (quill) => {
