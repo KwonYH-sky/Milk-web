@@ -97,16 +97,20 @@ public class BoardController {
 	}
 
 	@PostMapping(value = "/update/{id}")
-	public String updateBoard(@Valid BoardUpdateDto boardUpdateDto, @PathVariable Long id, BindingResult bindingResult, Model model) {
+	public String updateBoard(@Valid BoardUpdateDto boardUpdateDto, @PathVariable Long id,
+	                          BindingResult bindingResult, Model model,
+	                          @AuthenticationPrincipal CustomUserDetails userDetails) {
 		if (bindingResult.hasErrors())
 			return "board/boardUpdateForm";
 
 		try {
+			boardService.validateMemberBoard(id, userDetails.getName());
 			boardService.updateBoard(boardUpdateDto, id);
 		} catch (Exception e) {
 			log.error("BoardController updateBoard() error : " + e.getMessage());
 			model.addAttribute("errorMessage", "게시물 수정중 오류 발생하였습니다.");
 		}
+
 		return "redirect:/board/" + id;
 	}
 
