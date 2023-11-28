@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Optional;
 
@@ -115,11 +116,11 @@ public class BoardController {
 	}
 
 	@DeleteMapping(value = "/delete/{id}")
-	public String deleteBoard(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails principal, Model model) throws Exception {
+	public String deleteBoard(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails principal, RedirectAttributes ra) {
 		try {
 			boardService.deleteBoard(id, principal.getName());
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", "권한이 없습니다.");
+			ra.addFlashAttribute("errorMessage", "권한이 없습니다.");
 			return "redirect:/board/" + id;
 		}
 		return "redirect:/board/list";
@@ -127,7 +128,7 @@ public class BoardController {
 
 	@PostMapping(value = "/like")
 	public @ResponseBody ResponseEntity likeBoard(@RequestBody BoardLikeDto boardLikeDto, @AuthenticationPrincipal CustomUserDetails principal) {
-		if (principal == null)
+		if (Optional.ofNullable(principal).isEmpty())
 			return new ResponseEntity<>("Not Login", HttpStatus.UNAUTHORIZED);
 		try {
 			boardLikeService.addBoardLike(boardLikeDto, principal.getName());
