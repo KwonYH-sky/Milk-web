@@ -26,12 +26,10 @@ import java.util.ArrayList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Import({SecurityConfig.class, OAuth2Config.class})
@@ -139,7 +137,7 @@ public class BoardControllerTest {
 		given(boardService.getDetail(1L, mockUser.getMember())).willReturn(boardDetailDto);
 
 		// when, then
-		mockMvc.perform(get("/board/1").with(user(mockUser)))
+		mockMvc.perform(get("/board/{id}", 1L).with(user(mockUser)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("boardDetail"))
 				.andExpect(view().name("board/boardDetail"));
@@ -157,7 +155,7 @@ public class BoardControllerTest {
 		given(boardService.getUpdateForm(1L, mockUser.getName())).willReturn(boardUpdateDto);
 
 		// when, then
-		mockMvc.perform(get("/board/update/1").with(user(mockUser)))
+		mockMvc.perform(get("/board/update/{id}", 1L).with(user(mockUser)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("boardUpdateDto"))
 				.andExpect(view().name("board/boardUpdateForm"));
@@ -171,7 +169,7 @@ public class BoardControllerTest {
 		given(boardService.getUpdateForm(1L, mockUser.getName())).willThrow(MemberValidationException.class);
 
 		// when, then
-		mockMvc.perform(get("/board/update/1").with(user(mockUser)))
+		mockMvc.perform(get("/board/update/{id}", 1L).with(user(mockUser)))
 				.andExpect(status().is3xxRedirection());
 	}
 
@@ -185,10 +183,36 @@ public class BoardControllerTest {
 				.content("테스트")
 				.build();
 
-		mockMvc.perform(post("/board/update/1").with(csrf()).with(user(mockUser))
+		mockMvc.perform(post("/board/update/{id}", 1L).with(csrf()).with(user(mockUser))
 						.param("id", mockUpdateDto.getId().toString())
 						.param("title", mockUpdateDto.getTitle())
 						.param("content", mockUpdateDto.getContent()))
 				.andExpect(status().is3xxRedirection());
 	}
+
+	@Test
+	@DisplayName("Board Delete 요청 테스트")
+	void deleteBoardTest() throws Exception {
+		// given
+		doNothing().when(boardService).deleteBoard(1L, mockUser.getName());
+
+		// when, then
+		mockMvc.perform(delete("/board/delete/{id}", 1L).with(csrf()).with(user(mockUser)))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/board/list"));
+	}
+
+	@Test
+	@DisplayName("Board Delete 요청 실패 테스트")
+	void deleteBoardFailTest() throws Exception {
+		// given
+		doThrow(new MemberValidationException("Test")).when(boardService).deleteBoard(1L, mockUser.getName());
+
+		// when, then
+		mockMvc.perform(delete("/board/delete/{id}", 1L).with(csrf()).with(user(mockUser)))
+				.andExpect(flash().attributeExists("errorMessage"))
+				.andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/board/" + 1L));
+	}
+
 }
