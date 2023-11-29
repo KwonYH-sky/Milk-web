@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 permissions:
   checks: write
@@ -11,6 +11,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      MY_SQL_HOST: ${{secrets.MY_SQL_HOST}}
+      MY_SQL_NAME: ${{secrets.MY_SQL_USER}}
+      MY_SQL_PWD: ${{secrets.MY_SQL_PWD}}
     services:
       mysql:
         image: mysql:8.0
@@ -36,7 +40,7 @@ jobs:
 
       - name: Test MySQL Connection
         run: |
-          mysql -h 127.0.0.1 -u root -p${{secrets.MY_SQL_PWD}} -e "SELECT 1;"
+          mysql -h ${{secrets.MY_SQL_HOST}} -u root -p${{secrets.MY_SQL_PWD}} -e "SELECT 1;"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -45,11 +49,32 @@ jobs:
         uses: gradle/gradle-build-action@v2.9.0
         with:
           arguments: |
-            clean build 
+            clean build
 
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
-        if: ${{ always() }}  # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
+        if: ${{ always() }} # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
         with:
           files: build/test-results/**/*.xml
+
+      # 도커 로그인 빌드 후 DockerHub에 이미지 Push
+      - name: Build And Push Docker Image
+        run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PWD }}
+          docker build -t ${{ secrets.DOCKER_USER }}/milkweb .
+          docker push ${{ secrets.DOCKER_USER }}/milkweb
+
+      # 서버에서 Docker 이미지 실행
+      - name: EC2 Docker Run
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker rm -f $(docker ps -qa)
+            docker rmi ${{ secrets.DOCKER_USER }}/milkweb
+            docker pull ${{ secrets.DOCKER_USER }}/milkweb
+            docker-compose up -d
+            docker image prune -f
