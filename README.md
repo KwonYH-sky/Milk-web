@@ -20,3 +20,7 @@
 - DB
     - MySQL
 
+
+## 구조
+![Milk WEb Architecture](doc/img/milkweb%20아키텍처.PNG)
+
