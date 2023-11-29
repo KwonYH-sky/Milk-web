@@ -1,10 +1,12 @@
 package com.milk.milkweb.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milk.milkweb.config.OAuth2Config;
 import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.*;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.AlreadyLikeException;
 import com.milk.milkweb.exception.MemberValidationException;
 import com.milk.milkweb.service.BoardImgService;
 import com.milk.milkweb.service.BoardLikeService;
@@ -18,6 +20,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +44,8 @@ public class BoardControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@MockBean
 	private CustomOAuth2UserService customOAuth2UserService;
@@ -215,4 +221,54 @@ public class BoardControllerTest {
 				.andExpect(redirectedUrl("/board/" + 1L));
 	}
 
+	@Test
+	@DisplayName("Board Like POST 테스트")
+	void likeBoardTest() throws Exception {
+		// given
+		BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+				.boardId(1L)
+				.build();
+
+		// when, then
+		mockMvc.perform(post("/board/like").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(boardLikeDto)))
+				.andExpect(status().isOk());
+
+		verify(boardLikeService, times(1)).addBoardLike(any(BoardLikeDto.class), anyString());
+	}
+
+	@Test
+	@DisplayName("Board Like POST 미인증 테스트")
+	@WithAnonymousUser
+	void likeBoardUnauthorizedTest() throws Exception {
+		// given
+		BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+				.boardId(1L)
+				.build();
+
+		// when, then
+		mockMvc.perform(post("/board/like").with(csrf())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(boardLikeDto)))
+				.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	@DisplayName("Board Like POST Bad Request 테스트")
+	@WithAnonymousUser
+	void likeBoardBadRequestTest() throws Exception {
+		// given
+		BoardLikeDto boardLikeDto = BoardLikeDto.builder()
+				.boardId(1L)
+				.build();
+
+		doThrow(new AlreadyLikeException("Test")).when(boardLikeService).addBoardLike(any(BoardLikeDto.class), anyString());
+
+		// when, then
+		mockMvc.perform(post("/board/like").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(boardLikeDto)))
+				.andExpect(status().isBadRequest());
+	}
 }
