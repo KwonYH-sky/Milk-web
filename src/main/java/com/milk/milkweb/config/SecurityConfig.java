@@ -30,7 +30,6 @@ public class SecurityConfig {
 			"/board/write",
 			"/board/update/**",
 			"/board/delete/**",
-			"/board/like",
 			"/board/uploadImg",
 			"/comment/write",
 			"/comment/update",
