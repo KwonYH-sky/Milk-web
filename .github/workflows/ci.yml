@@ -15,6 +15,7 @@ jobs:
       MY_SQL_HOST: ${{secrets.MY_SQL_HOST}}
       MY_SQL_NAME: ${{secrets.MY_SQL_USER}}
       MY_SQL_PWD: ${{secrets.MY_SQL_PWD}}
+      FILE_LOCATION: /
     services:
       mysql:
         image: mysql:8.0
