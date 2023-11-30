@@ -12,6 +12,7 @@ import com.milk.milkweb.service.BoardImgService;
 import com.milk.milkweb.service.BoardLikeService;
 import com.milk.milkweb.service.BoardService;
 import com.milk.milkweb.service.CustomOAuth2UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -270,5 +271,31 @@ public class BoardControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(boardLikeDto)))
 				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	@DisplayName("Board Like Get Success 테스트")
+	void getLikeTest() throws Exception {
+		// given
+		given(boardLikeService.getBoardLike(1L)).willReturn(100);
+
+		// when, then
+		mockMvc.perform(get("/board/like/{id}", 1L))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$").value(100));
+	}
+
+	@Test
+	@DisplayName("Board Like Get Fail 테스트")
+	void getLikeFailTest() throws Exception {
+		// given
+		doThrow(new EntityNotFoundException("Not Found")).when(boardLikeService).getBoardLike(1L);
+
+		// when, then
+		mockMvc.perform(get("/board/like/{id}", 1L))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
+				.andExpect(jsonPath("$").value("Not Found"));
 	}
 }
