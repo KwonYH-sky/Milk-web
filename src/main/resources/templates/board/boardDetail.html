@@ -2,6 +2,20 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
   layout:decorate="~{layout/layout}">
 
+<th:block layout:fragment="css">
+  <style>
+    p img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    p iframe {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</th:block>
+
 <th:block layout:fragment="script">
   <script src="/js/boardDetail.js"></script>
 
