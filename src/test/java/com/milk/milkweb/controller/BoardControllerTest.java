@@ -22,10 +22,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -297,5 +300,46 @@ public class BoardControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
 				.andExpect(jsonPath("$").value("Not Found"));
+	}
+
+
+	@Test
+	@WithMockUser
+	@DisplayName("Board 이미지 저장 테스트")
+	void postImgTest() throws Exception {
+		// given
+		MockMultipartFile mockMultipartFile = new MockMultipartFile("img", "test.jpg", "image/jpeg", "test image".getBytes());
+		BoardImgUploadDto boardImgUploadDto = BoardImgUploadDto.builder()
+				.boardImgID(1L)
+				.imgName(mockMultipartFile.getName())
+				.build();
+
+		given(boardImgService.uploadImg(mockMultipartFile)).willReturn(boardImgUploadDto);
+
+		// when, then
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/board/uploadImg")
+						.file(mockMultipartFile)
+						.with(csrf()))
+				.andExpect(status().isOk());
+
+		verify(boardImgService, times(1)).uploadImg(mockMultipartFile);
+	}
+
+	@Test
+	@WithMockUser
+	@DisplayName("Board 이미지 저장 실패 테스트")
+	void postImgFailTest() throws Exception {
+		// given
+		MockMultipartFile mockMultipartFile = new MockMultipartFile("img", "test.jpg", "image/jpeg", "test image".getBytes());
+
+		doThrow(new IOException("Error")).when(boardImgService).uploadImg(mockMultipartFile);
+
+		// when, then
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/board/uploadImg")
+						.file(mockMultipartFile)
+						.with(csrf()))
+				.andExpect(status().isBadRequest());
+
+		verify(boardImgService, times(1)).uploadImg(mockMultipartFile);
 	}
 }
