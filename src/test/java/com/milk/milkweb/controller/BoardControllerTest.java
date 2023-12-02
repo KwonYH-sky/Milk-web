@@ -20,7 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithAnonymousUser;
@@ -31,8 +35,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -122,7 +125,7 @@ public class BoardControllerTest {
 		boardSearchDto.setSearchType("제목");
 		boardSearchDto.setKeyword("테스트");
 
-		given(boardService.getSearchBoardList(any(BoardSearchDto.class) ,anyInt())).willReturn(new PageImpl<>(new ArrayList<BoardListDto>()));
+		given(boardService.getSearchBoardList(any(BoardSearchDto.class), anyInt())).willReturn(new PageImpl<>(new ArrayList<BoardListDto>()));
 
 		// when, then
 		mockMvc.perform(get("/board/list")
@@ -341,5 +344,37 @@ public class BoardControllerTest {
 				.andExpect(status().isBadRequest());
 
 		verify(boardImgService, times(1)).uploadImg(mockMultipartFile);
+	}
+
+	@Test
+	@DisplayName("Board Img GET 테스트")
+	void getImgTest() throws Exception {
+		// given
+		String imgName = "test.jpg";
+		Resource resource = new ByteArrayResource("test image data".getBytes());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentDisposition(ContentDisposition.attachment().filename(imgName).build());
+		BoardImgDownloadDto boardImgDownloadDto = BoardImgDownloadDto.builder()
+				.resource(resource)
+				.header(headers)
+				.build();
+		given(boardImgService.downloadImg(imgName)).willReturn(boardImgDownloadDto);
+
+		// when, then
+		mockMvc.perform(get("/board/images").param("imgName", imgName))
+				.andExpect(status().isOk())
+				.andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + "\"" + imgName + "\""))
+				.andExpect(content().bytes("test image data".getBytes()));
+	}
+
+	@Test
+	@DisplayName("Board Img GET 실패 테스트")
+	void getImgFailTest() throws Exception {
+		// given
+		given(boardImgService.downloadImg(anyString())).willThrow(new IOException("Image not found"));
+
+		// when, then
+		mockMvc.perform(get("/board/images").param("imgName", "test.jpg"))
+				.andExpect(status().isNotFound());
 	}
 }
