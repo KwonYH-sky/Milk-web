@@ -17,15 +17,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Import({SecurityConfig.class, OAuth2Config.class})
@@ -93,4 +99,18 @@ class CommentControllerTest {
 
 		verify(commentService, times(1)).saveComment(any(CommentFormDto.class), anyString());
 	}
+
+	@Test
+	@DisplayName("Comment 리스트 GET 성공 테스트")
+	void getCommentPageTest() throws Exception {
+		// given
+		given(commentService.getCommentList(anyInt(), anyLong(), anyString())).willReturn(new PageImpl<>(List.of()));
+
+		//then, when
+		mockMvc.perform(get("/comment/board/{id}", 1L)
+				.param("page", "1"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.content").isArray());
+	}
+
 }
