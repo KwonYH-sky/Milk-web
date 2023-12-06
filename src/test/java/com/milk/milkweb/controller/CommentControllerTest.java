@@ -5,6 +5,7 @@ import com.milk.milkweb.config.OAuth2Config;
 import com.milk.milkweb.config.SecurityConfig;
 import com.milk.milkweb.constant.Role;
 import com.milk.milkweb.dto.CommentFormDto;
+import com.milk.milkweb.dto.CommentUpdateDto;
 import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.entity.Member;
 import com.milk.milkweb.service.CommentService;
@@ -29,8 +30,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,4 +113,19 @@ class CommentControllerTest {
 				.andExpect(jsonPath("$.content").isArray());
 	}
 
+	@Test
+	@DisplayName("Comment PATCH 성공 테스트")
+	void updateCommentTest() throws Exception {
+		// given
+		CommentUpdateDto mockUpdateDto = CommentUpdateDto.builder()
+				.id(1L)
+				.comment("test comment")
+				.build();
+
+		// when, then
+		mockMvc.perform(patch("/comment/update").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(mockUpdateDto)))
+				.andExpect(status().isOk());
+	}
 }
