@@ -8,6 +8,7 @@ import com.milk.milkweb.dto.CommentFormDto;
 import com.milk.milkweb.dto.CommentUpdateDto;
 import com.milk.milkweb.dto.CustomUserDetails;
 import com.milk.milkweb.entity.Member;
+import com.milk.milkweb.exception.MemberValidationException;
 import com.milk.milkweb.service.CommentService;
 import com.milk.milkweb.service.CustomOAuth2UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -127,5 +128,23 @@ class CommentControllerTest {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(mockUpdateDto)))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("Comment PATCH 실패 테스트")
+	void updateCommentFailTest() throws Exception {
+		// given
+		CommentUpdateDto mockUpdateDto = CommentUpdateDto.builder()
+				.id(1L)
+				.comment("test comment")
+				.build();
+
+		doThrow(new MemberValidationException("test")).when(commentService).updateComment(any(CommentUpdateDto.class), anyString());
+
+		// when, then
+		mockMvc.perform(patch("/comment/update").with(csrf()).with(user(mockUser))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(mockUpdateDto)))
+				.andExpect(status().isBadRequest());
 	}
 }
