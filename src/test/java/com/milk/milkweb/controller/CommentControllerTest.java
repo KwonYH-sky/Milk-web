@@ -147,4 +147,27 @@ class CommentControllerTest {
 						.content(objectMapper.writeValueAsString(mockUpdateDto)))
 				.andExpect(status().isBadRequest());
 	}
+
+	@Test
+	@DisplayName("Comment DELETE 성공 테스트")
+	void deleteCommentTest() throws Exception {
+		// when, then
+		mockMvc.perform(delete("/comment/delete/{commentId}", 1L)
+						.with(csrf())
+						.with(user(mockUser)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@DisplayName("Comment DELETE 실패 테스트")
+	void deleteCommentFailTest() throws Exception {
+		// given
+		doThrow(new MemberValidationException("test")).when(commentService).deleteComment(anyLong(), anyString());
+
+		// when, then
+		mockMvc.perform(delete("/comment/delete/{commentId}", 1L)
+						.with(csrf())
+						.with(user(mockUser)))
+				.andExpect(status().isBadRequest());
+	}
 }
