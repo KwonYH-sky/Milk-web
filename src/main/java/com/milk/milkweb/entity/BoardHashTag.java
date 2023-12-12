@@ -25,4 +25,11 @@ public class BoardHashTag {
 	@JoinColumn(name = "hash_tag_id")
 	private HashTag hashTag;
 
+	public static BoardHashTag of(Board board, HashTag tag) {
+		return BoardHashTag.builder()
+				.board(board)
+				.hashTag(tag)
+				.build();
+	}
+
 }

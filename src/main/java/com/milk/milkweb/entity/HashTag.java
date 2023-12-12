@@ -20,4 +20,10 @@ public class HashTag {
 	@Column(nullable = false, unique = true)
 	private String tag;
 
+	public static HashTag of (String tag) {
+		return HashTag.builder()
+				.tag(tag)
+				.build();
+	}
+
 }
