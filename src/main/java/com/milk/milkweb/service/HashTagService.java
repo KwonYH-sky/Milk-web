@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,6 +31,7 @@ public class HashTagService {
 				.filter(s -> !hashTagRepository.existsByTag(s))
 				.map(HashTag::of)
 				.toList();
+		log.info("saveHashTag -> hashTagRepository.saveAll");
 		hashTagRepository.saveAll(hashTags);
 
 		List<BoardHashTag> boardHashTags = dtoTags.stream()
@@ -38,8 +40,15 @@ public class HashTagService {
 				.map(Optional::get)
 				.map(tag -> BoardHashTag.of(board, tag))
 				.toList();
+		log.info("saveHashTag -> boardHashTagRepository.saveAll");
 		boardHashTagRepository.saveAll(boardHashTags);
 	}
 
 
+	@Transactional(readOnly = true)
+	public Set<String> readHashTag(Long boardId) {
+		return boardHashTagRepository.findAllByBoardId(boardId).stream()
+				.map(boardHashTag -> boardHashTag.getHashTag().getTag())
+				.collect(Collectors.toSet());
+	}
 }
