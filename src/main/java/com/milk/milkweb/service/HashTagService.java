@@ -51,4 +51,14 @@ public class HashTagService {
 				.map(boardHashTag -> boardHashTag.getHashTag().getTag())
 				.collect(Collectors.toSet());
 	}
+
+	public void DeleteBoardTag(Long boardId, Set<String> dtoTags) {
+		List<BoardHashTag> boardHashTags = boardHashTagRepository.findAllByBoardId(boardId);
+
+		List<BoardHashTag> deleteBoardTags = boardHashTags.stream()
+				.filter(t -> !dtoTags.contains(t.getHashTag().getTag()))
+				.toList();
+		boardHashTagRepository.deleteAll(deleteBoardTags);
+
+	}
 }
